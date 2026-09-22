@@ -5,71 +5,274 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#ffffff">
 <title>Al.just Táxi</title>
+
 <link rel="manifest" href="manifest.json">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 <link rel="stylesheet" href="style.css">
+
+<style>
+.account-card{
+  background:#fff;
+  border-radius:20px;
+  margin:0 14px 16px;
+  padding:20px;
+  box-shadow:0 5px 22px #0000000d;
+  max-width:732px;
+  margin-left:auto;
+  margin-right:auto;
+}
+
+.account-title{
+  font-size:25px;
+  font-weight:800;
+  color:#172033;
+  margin:0 0 6px;
+}
+
+.account-subtitle{
+  color:#697386;
+  font-size:14px;
+  margin:0 0 22px;
+}
+
+.settings-item{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  padding:15px 0;
+  border-bottom:1px solid #edf0f4;
+}
+
+.settings-item:last-child{
+  border-bottom:0;
+}
+
+.settings-left{
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+
+.settings-icon{
+  width:42px;
+  height:42px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:#eef4fb;
+  border-radius:12px;
+  font-size:20px;
+}
+
+.settings-text strong{
+  display:block;
+  font-size:15px;
+  color:#172033;
+}
+
+.settings-text small{
+  display:block;
+  color:#7a8494;
+  font-size:12px;
+  margin-top:3px;
+}
+
+.settings-action{
+  border:0;
+  border-radius:10px;
+  padding:9px 12px;
+  font-weight:700;
+  background:#eef4fb;
+  color:#173d72;
+  cursor:pointer;
+}
+
+.account-field{
+  margin-top:12px;
+}
+
+.account-field label{
+  margin-bottom:7px;
+}
+
+.account-field input{
+  margin-bottom:5px;
+}
+
+.save-account{
+  width:100%;
+  margin-top:14px;
+  height:50px;
+  border:0;
+  border-radius:13px;
+  background:#e5232b;
+  color:#fff;
+  font-size:16px;
+  font-weight:800;
+  cursor:pointer;
+}
+
+.account-message{
+  min-height:20px;
+  text-align:center;
+  color:#173d72;
+  font-size:13px;
+  margin:10px 0 0;
+}
+
+.switch{
+  position:relative;
+  width:50px;
+  height:28px;
+}
+
+.switch input{
+  display:none;
+}
+
+.slider{
+  position:absolute;
+  inset:0;
+  background:#ccd3dc;
+  border-radius:30px;
+  cursor:pointer;
+  transition:.2s;
+}
+
+.slider:before{
+  content:"";
+  position:absolute;
+  width:22px;
+  height:22px;
+  left:3px;
+  top:3px;
+  background:#fff;
+  border-radius:50%;
+  transition:.2s;
+}
+
+.switch input:checked + .slider{
+  background:#173d72;
+}
+
+.switch input:checked + .slider:before{
+  transform:translateX(22px);
+}
+
+.back-home{
+  width:100%;
+  margin-top:10px;
+  height:48px;
+  border:1px solid #dfe4eb;
+  border-radius:13px;
+  background:#fff;
+  color:#173d72;
+  font-size:15px;
+  font-weight:800;
+  cursor:pointer;
+}
+</style>
 </head>
+
 <body>
+
 <header class="topbar">
   <div class="logo">AL<span>.just</span><small> Táxi</small></div>
   <button id="modeBtn" class="mode-btn">👨🏽‍✈️ Motorista</button>
 </header>
 
 <main>
-  <section class="hero">
-    <p class="small">AL.JUST TÁXI</p>
-    <h1 id="pageTitle">Pedir uma corrida</h1>
-    <p id="pageSubtitle" class="muted">Escolha o local de partida e o destino.</p>
+
+  <!-- CLIENTE -->
+  <section id="customerHome">
+
+    <section class="hero">
+      <p class="small">AL.JUST TÁXI</p>
+      <h1 id="pageTitle">Pedir uma corrida</h1>
+      <p id="pageSubtitle" class="muted">
+        Escolha o local de partida e o destino.
+      </p>
+    </section>
+
+    <section id="customerPanel" class="card">
+
+      <label>👤 Seu nome</label>
+      <input id="customerName" placeholder="Ex.: Alberto">
+
+      <label>📍 Local de partida</label>
+      <input id="pickupText" placeholder="Clique em Minha localização">
+
+      <label>🎯 Destino</label>
+      <input id="destinationText" placeholder="Toque no mapa para marcar">
+
+      <div class="map-wrap">
+        <div id="map"></div>
+        <button id="locationBtn" class="map-locate">
+          📍 Minha localização
+        </button>
+      </div>
+
+      <p class="hint">
+        A localização do cliente e o destino são guardados no pedido.
+      </p>
+
+      <div class="row">
+
+        <div>
+          <label>👥 Passageiros</label>
+          <select id="passengers">
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+          </select>
+        </div>
+
+        <div>
+          <label>🚕 Tipo</label>
+          <select id="carType">
+            <option value="normal">Al.just Normal</option>
+            <option value="confort">Al.just Confort</option>
+          </select>
+        </div>
+
+      </div>
+
+      <div class="estimate">
+        <div>
+          <span>Distância</span>
+          <strong id="distance">-- km</strong>
+        </div>
+
+        <div class="right">
+          <span>Estimativa</span>
+          <strong id="price">-- Kz</strong>
+        </div>
+      </div>
+
+      <button id="requestBtn" class="primary">
+        🚕 Pedir táxi
+      </button>
+
+      <div id="rideStatus" class="status-box hidden"></div>
+      <div id="driverCard" class="driver-live hidden"></div>
+
+      <p id="customerMessage" class="message"></p>
+
+    </section>
+
   </section>
 
-  <section id="customerPanel" class="card">
-    <label>👤 Seu nome</label>
-    <input id="customerName" placeholder="Ex.: Alberto">
 
-    <label>📍 Local de partida</label>
-    <input id="pickupText" placeholder="Clique em Minha localização">
-
-    <label>🎯 Destino</label>
-    <input id="destinationText" placeholder="Toque no mapa para marcar">
-
-    <div class="map-wrap">
-      <div id="map"></div>
-      <button id="locationBtn" class="map-locate">📍 Minha localização</button>
-    </div>
-    <p class="hint">A localização do cliente e o destino são guardados no pedido.</p>
-
-    <div class="row">
-      <div>
-        <label>👥 Passageiros</label>
-        <select id="passengers">
-          <option value="1">1</option><option value="2">2</option>
-          <option value="3">3</option><option value="4">4</option>
-        </select>
-      </div>
-      <div>
-        <label>🚕 Tipo</label>
-        <select id="carType">
-          <option value="normal">Al.just Normal</option>
-          <option value="confort">Al.just Confort</option>
-        </select>
-      </div>
-    </div>
-
-    <div class="estimate">
-      <div><span>Distância</span><strong id="distance">-- km</strong></div>
-      <div class="right"><span>Estimativa</span><strong id="price">-- Kz</strong></div>
-    </div>
-
-    <button id="requestBtn" class="primary">🚕 Pedir táxi</button>
-    <div id="rideStatus" class="status-box hidden"></div>
-    <div id="driverCard" class="driver-live hidden"></div>
-    <p id="customerMessage" class="message"></p>
-  </section>
-
+  <!-- MOTORISTA -->
   <section id="driverPanel" class="card hidden">
+
     <div class="section-title">
       <h2>Painel do motorista</h2>
-      <span id="driverConnection" class="offline">● offline</span>
+      <span id="driverConnection" class="offline">
+        ● offline
+      </span>
     </div>
 
     <label>👨🏽‍✈️ Nome do motorista</label>
@@ -79,35 +282,381 @@
     <input id="driverPhone" placeholder="Ex.: 926 000 000">
 
     <div class="row">
+
       <div>
         <label>🚘 Viatura</label>
         <input id="driverCar" placeholder="Ex.: Toyota Corolla">
       </div>
+
       <div>
         <label>🔢 Matrícula</label>
         <input id="driverPlate" placeholder="Ex.: LD-00-00-AA">
       </div>
+
     </div>
 
-    <button id="driverOnlineBtn" class="primary secondary">🟢 Ficar online</button>
+    <button id="driverOnlineBtn" class="primary secondary">
+      🟢 Ficar online
+    </button>
 
     <div id="activeRide" class="status-box hidden"></div>
+
     <div id="driverRequests" class="requests">
-      <div class="empty">Entre online para receber pedidos dos clientes.</div>
+      <div class="empty">
+        Entre online para receber pedidos dos clientes.
+      </div>
     </div>
+
     <p id="driverMessage" class="message"></p>
+
   </section>
+
+
+  <!-- CONTA / CONFIGURAÇÕES -->
+  <section id="accountPanel" class="account-card hidden">
+
+    <h2 class="account-title">⚙️ Configurações</h2>
+
+    <p class="account-subtitle">
+      Gerencie os seus dados e preferências do Al.just Táxi.
+    </p>
+
+
+    <div class="account-field">
+
+      <label>👤 Seu nome</label>
+
+      <input
+        id="accountName"
+        type="text"
+        placeholder="Digite o seu nome"
+      >
+
+    </div>
+
+
+    <div class="account-field">
+
+      <label>📞 Seu telefone</label>
+
+      <input
+        id="accountPhone"
+        type="tel"
+        placeholder="Ex.: 926 163 681"
+      >
+
+    </div>
+
+
+    <button id="saveAccountBtn" class="save-account">
+      💾 Guardar dados
+    </button>
+
+    <p id="accountMessage" class="account-message"></p>
+
+
+    <div class="settings-item">
+
+      <div class="settings-left">
+
+        <div class="settings-icon">
+          🔔
+        </div>
+
+        <div class="settings-text">
+          <strong>Notificações</strong>
+          <small>Receber avisos sobre corridas</small>
+        </div>
+
+      </div>
+
+      <label class="switch">
+
+        <input
+          type="checkbox"
+          id="notificationsToggle"
+          checked
+        >
+
+        <span class="slider"></span>
+
+      </label>
+
+    </div>
+
+
+    <div class="settings-item">
+
+      <div class="settings-left">
+
+        <div class="settings-icon">
+          📱
+        </div>
+
+        <div class="settings-text">
+          <strong>Aplicação</strong>
+          <small>Al.just Táxi</small>
+        </div>
+
+      </div>
+
+      <span style="color:#7a8494;font-size:13px;">
+        v1.0
+      </span>
+
+    </div>
+
+
+    <div class="settings-item">
+
+      <div class="settings-left">
+
+        <div class="settings-icon">
+          🏢
+        </div>
+
+        <div class="settings-text">
+          <strong>Empresa</strong>
+          <small>Al.just Táxi — Angola</small>
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <button id="backHomeBtn" class="back-home">
+      ← Voltar para início
+    </button>
+
+  </section>
+
 </main>
 
+
+<!-- MENU INFERIOR -->
 <nav class="bottom-nav">
-  <button class="active">🏠<span>Início</span></button>
-  <button id="bottomMode">👨🏽‍✈️<span>Motorista</span></button>
-  <button>👤<span>Conta</span></button>
+
+  <button
+    id="bottomHome"
+    class="active"
+  >
+    🏠
+    <span>Início</span>
+  </button>
+
+  <button id="bottomMode">
+    👨🏽‍✈️
+    <span>Motorista</span>
+  </button>
+
+  <button id="bottomAccount">
+    ⚙️
+    <span>Conta</span>
+  </button>
+
 </nav>
 
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
 <script src="config.js"></script>
+
 <script src="app.js"></script>
+
+
+<script>
+/* ================================
+   CONTA / CONFIGURAÇÕES
+================================ */
+
+const accountPanel =
+  document.getElementById("accountPanel");
+
+const customerHome =
+  document.getElementById("customerHome");
+
+const bottomHome =
+  document.getElementById("bottomHome");
+
+const bottomAccount =
+  document.getElementById("bottomAccount");
+
+const bottomMode =
+  document.getElementById("bottomMode");
+
+const saveAccountBtn =
+  document.getElementById("saveAccountBtn");
+
+const backHomeBtn =
+  document.getElementById("backHomeBtn");
+
+const accountName =
+  document.getElementById("accountName");
+
+const accountPhone =
+  document.getElementById("accountPhone");
+
+const accountMessage =
+  document.getElementById("accountMessage");
+
+
+/* CARREGAR DADOS */
+
+function loadAccountData(){
+
+  const savedName =
+    localStorage.getItem("aljust_customer_name") || "";
+
+  const savedPhone =
+    localStorage.getItem("aljust_customer_phone") || "";
+
+  accountName.value = savedName;
+
+  accountPhone.value = savedPhone;
+}
+
+loadAccountData();
+
+
+/* MOSTRAR CONTA */
+
+function showAccount(){
+
+  accountPanel.classList.remove("hidden");
+
+  customerHome.classList.add("hidden");
+
+  document
+    .getElementById("driverPanel")
+    .classList.add("hidden");
+
+  bottomHome.classList.remove("active");
+
+  bottomMode.classList.remove("active");
+
+  bottomAccount.classList.add("active");
+
+}
+
+
+/* MOSTRAR INÍCIO */
+
+function showHome(){
+
+  accountPanel.classList.add("hidden");
+
+  customerHome.classList.remove("hidden");
+
+  document
+    .getElementById("driverPanel")
+    .classList.add("hidden");
+
+  bottomAccount.classList.remove("active");
+
+  bottomMode.classList.remove("active");
+
+  bottomHome.classList.add("active");
+
+}
+
+
+/* BOTÃO CONTA */
+
+bottomAccount.addEventListener(
+  "click",
+  function(){
+
+    showAccount();
+
+  }
+);
+
+
+/* BOTÃO INÍCIO */
+
+bottomHome.addEventListener(
+  "click",
+  function(){
+
+    showHome();
+
+  }
+);
+
+
+/* BOTÃO VOLTAR */
+
+backHomeBtn.addEventListener(
+  "click",
+  function(){
+
+    showHome();
+
+  }
+);
+
+
+/* GUARDAR DADOS */
+
+saveAccountBtn.addEventListener(
+  "click",
+  function(){
+
+    const name =
+      accountName.value.trim();
+
+    const phone =
+      accountPhone.value.trim();
+
+    localStorage.setItem(
+      "aljust_customer_name",
+      name
+    );
+
+    localStorage.setItem(
+      "aljust_customer_phone",
+      phone
+    );
+
+
+    const customerName =
+      document.getElementById("customerName");
+
+    if(customerName){
+
+      customerName.value = name;
+
+    }
+
+
+    accountMessage.textContent =
+      "✅ Dados guardados com sucesso.";
+
+  }
+);
+
+
+/* CONTA O NOME DO CLIENTE */
+
+const customerNameInput =
+  document.getElementById("customerName");
+
+if(customerNameInput){
+
+  const saved =
+    localStorage.getItem("aljust_customer_name");
+
+  if(saved){
+
+    customerNameInput.value = saved;
+
+  }
+
+}
+</script>
+
 </body>
 </html>
