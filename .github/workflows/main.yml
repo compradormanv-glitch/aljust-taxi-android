@@ -1,39 +1,178 @@
-All workflows
-Filter workflow runs
-Showing runs from all workflows
-7 workflow runs
-Implement CI/CD for Al.just Táxi APK build
-Build Al.just Táxi APK #7: Commit d464c33 pushed by compradormanv-glitch
-main	
-1 minute ago
- 34s
-Fix missing newline at end of index.html
-Build Al.just Táxi APK #6: Commit cdd9055 pushed by compradormanv-glitch
-main	
-3 minutes ago
- 27s
-Refactor HTML structure and improve layout
-Build Al.just Táxi APK #5: Commit 31b864f pushed by compradormanv-glitch
-main	
-11 minutes ago
- 1m 14s
-Add files via upload
-Build Al.just Táxi APK #4: Commit 8b5eb7a pushed by compradormanv-glitch
-main	
-20 minutes ago
- 33s
-Add files via upload
-Build Al.just Táxi APK #3: Commit 9c49f5c pushed by compradormanv-glitch
-main	
-24 minutes ago
- 1m 1s
-Add files via upload
-Build Al.just Táxi APK #2: Commit 2741f9f pushed by compradormanv-glitch
-main	
-Today at 09:01
- 45s
-Add GitHub Actions workflow for building APK
-Build Al.just Táxi APK #1: Commit 6a51f6f pushed by compradormanv-glitch
-main	
-Sep 21, 20:38 GMT+1
- 1m 18s
+name: Build Al.just Táxi APK
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Baixar código
+        uses: actions/checkout@v4
+
+      - name: Configurar Java 17
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Configurar Android SDK
+        uses: android-actions/setup-android@v4
+
+      - name: Configurar Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: "8.9"
+
+      - name: Criar estrutura Android
+        shell: bash
+        run: |
+          mkdir -p app/src/main/java/ao/aljust/taxi
+          mkdir -p app/src/main/assets
+
+          cp index.html app/src/main/assets/index.html
+          cp style.css app/src/main/assets/style.css
+          cp app.js app/src/main/assets/app.js
+          cp config.js app/src/main/assets/config.js
+          cp manifest.json app/src/main/assets/manifest.json
+          cp sw.js app/src/main/assets/sw.js
+          cp icon-192.png app/src/main/assets/icon-192.png
+          cp icon-512.png app/src/main/assets/icon-512.png
+
+          cat > settings.gradle.kts <<'EOF'
+          pluginManagement {
+              repositories {
+                  google()
+                  mavenCentral()
+                  gradlePluginPortal()
+              }
+          }
+
+          dependencyResolutionManagement {
+              repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+              repositories {
+                  google()
+                  mavenCentral()
+              }
+          }
+
+          rootProject.name = "AljustTaxiAndroid"
+          include(":app")
+          EOF
+
+          cat > build.gradle.kts <<'EOF'
+          plugins {
+              id("com.android.application") version "8.7.0" apply false
+          }
+          EOF
+
+          cat > app/build.gradle.kts <<'EOF'
+          plugins {
+              id("com.android.application")
+          }
+
+          android {
+              namespace = "ao.aljust.taxi"
+              compileSdk = 35
+
+              defaultConfig {
+                  applicationId = "ao.aljust.taxi"
+                  minSdk = 24
+                  targetSdk = 35
+                  versionCode = 1
+                  versionName = "1.0"
+              }
+
+              compileOptions {
+                  sourceCompatibility = JavaVersion.VERSION_17
+                  targetCompatibility = JavaVersion.VERSION_17
+              }
+          }
+          EOF
+
+          cat > app/src/main/AndroidManifest.xml <<'EOF'
+          <?xml version="1.0" encoding="utf-8"?>
+          <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+              <uses-permission android:name="android.permission.INTERNET" />
+              <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+              <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+
+              <application
+                  android:allowBackup="true"
+                  android:label="Al.just Táxi"
+                  android:theme="@android:style/Theme.Material.Light.NoActionBar">
+
+                  <activity
+                      android:name=".MainActivity"
+                      android:exported="true">
+
+                      <intent-filter>
+                          <action android:name="android.intent.action.MAIN" />
+                          <category android:name="android.intent.category.LAUNCHER" />
+                      </intent-filter>
+
+                  </activity>
+
+              </application>
+
+          </manifest>
+          EOF
+
+          cat > app/src/main/java/ao/aljust/taxi/MainActivity.java <<'EOF'
+          package ao.aljust.taxi;
+
+          import android.app.Activity;
+          import android.os.Bundle;
+          import android.webkit.WebSettings;
+          import android.webkit.WebView;
+          import android.webkit.WebViewClient;
+
+          public class MainActivity extends Activity {
+
+              private WebView webView;
+
+              @Override
+              protected void onCreate(Bundle savedInstanceState) {
+                  super.onCreate(savedInstanceState);
+
+                  webView = new WebView(this);
+
+                  WebSettings settings = webView.getSettings();
+                  settings.setJavaScriptEnabled(true);
+                  settings.setDomStorageEnabled(true);
+                  settings.setAllowFileAccess(true);
+                  settings.setAllowContentAccess(true);
+
+                  webView.setWebViewClient(new WebViewClient());
+                  webView.loadUrl("file:///android_asset/index.html");
+
+                  setContentView(webView);
+              }
+
+              @Override
+              public void onBackPressed() {
+                  if (webView.canGoBack()) {
+                      webView.goBack();
+                  } else {
+                      super.onBackPressed();
+                  }
+              }
+          }
+          EOF
+
+      - name: Compilar APK
+        run: gradle --no-daemon :app:assembleDebug
+
+      - name: Guardar APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: Al.just-Taxi-APK
+          path: app/build/outputs/apk/debug/app-debug.apk
