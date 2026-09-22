@@ -1,168 +1,827 @@
-name: Build Al.just Táxi APK
+<!DOCTYPE html>
 
-on:
-  push:
-    branches: ["main"]
-  workflow_dispatch:
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#ffffff">
+  <title>Al.just Táxi</title>
 
-permissions:
-  contents: write
+  <link rel="manifest" href="manifest.json">
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 
-jobs:
-  build:
-    runs-on: ubuntu-latest
+  <style>
+    .account-card{
+      background:#fff;
+      border-radius:20px;
+      margin:0 14px 16px;
+      padding:20px;
+      box-shadow:0 5px 22px #0000000d;
+      max-width:732px;
+      margin-left:auto;
+      margin-right:auto;
+    }
 
-    steps:
-      - name: Baixar código
-        uses: actions/checkout@v4
+    .account-title{
+      font-size:25px;
+      font-weight:800;
+      color:#172033;
+      margin:0 0 6px;
+    }
 
-      - name: Configurar Java 17
-        uses: actions/setup-java@v5
-        with:
-          distribution: temurin
-          java-version: "17"
+    .account-subtitle{
+      color:#697386;
+      font-size:14px;
+      margin:0 0 22px;
+    }
 
-      - name: Configurar Android SDK
-        uses: android-actions/setup-android@v4
+    .settings-item{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      padding:15px 0;
+      border-bottom:1px solid #edf0f4;
+    }
 
-      - name: Configurar Gradle
-        uses: gradle/actions/setup-gradle@v4
-        with:
-          gradle-version: "8.9"
+    .settings-item:last-child{
+      border-bottom:0;
+    }
 
-      - name: Criar módulo Android
-        shell: bash
-        run: |
-          set -e
+    .settings-left{
+      display:flex;
+      align-items:center;
+      gap:12px;
+    }
 
-          mkdir -p app/src/main/java/com/aljust/taxi
+    .settings-icon{
+      width:42px;
+      height:42px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      background:#eef4fb;
+      border-radius:12px;
+      font-size:20px;
+    }
 
-          cat > app/build.gradle.kts <<'EOF'
-          plugins {
-              id("com.android.application")
-          }
+    .settings-text strong{
+      display:block;
+      font-size:15px;
+      color:#172033;
+    }
 
-          android {
-              namespace = "com.aljust.taxi"
-              compileSdk = 35
+    .settings-text small{
+      display:block;
+      color:#7a8494;
+      font-size:12px;
+      margin-top:3px;
+    }
 
-              defaultConfig {
-                  applicationId = "com.aljust.taxi"
-                  minSdk = 23
-                  targetSdk = 35
-                  versionCode = 1
-                  versionName = "1.0"
-              }
+    .save-account{
+      width:100%;
+      height:50px;
+      border:0;
+      border-radius:13px;
+      background:#e5232b;
+      color:#fff;
+      font-size:16px;
+      font-weight:800;
+      cursor:pointer;
+    }
 
-              buildTypes {
-                  release {
-                      isMinifyEnabled = false
-                  }
-              }
-          }
-          EOF
+    .account-message{
+      min-height:20px;
+      text-align:center;
+      color:#173d72;
+      font-size:13px;
+      margin:10px 0;
+    }
 
-          cat > app/src/main/AndroidManifest.xml <<'EOF'
-          <?xml version="1.0" encoding="utf-8"?>
-          <manifest xmlns:android="http://schemas.android.com/apk/res/android">
-              <uses-permission android:name="android.permission.INTERNET" />
-              <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-              <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    .back-home{
+      width:100%;
+      margin-top:10px;
+      height:48px;
+      border:1px solid #dfe4eb;
+      border-radius:13px;
+      background:#fff;
+      color:#173d72;
+      font-size:15px;
+      font-weight:800;
+      cursor:pointer;
+    }
 
-              <application
-                  android:allowBackup="true"
-                  android:label="Al.just Táxi"
-                  android:usesCleartextTraffic="false"
-                  android:theme="@android:style/Theme.Material.Light.NoActionBar">
-                  <activity
-                      android:name=".MainActivity"
-                      android:exported="true">
-                      <intent-filter>
-                          <action android:name="android.intent.action.MAIN" />
-                          <category android:name="android.intent.category.LAUNCHER" />
-                      </intent-filter>
-                  </activity>
-              </application>
-          </manifest>
-          EOF
+    .switch{
+      position:relative;
+      display:block;
+      width:50px;
+      height:28px;
+    }
 
-          cat > app/src/main/java/com/aljust/taxi/MainActivity.java <<'EOF'
-          package com.aljust.taxi;
+    .switch input{
+      display:none;
+    }
 
-          import android.Manifest;
-          import android.app.Activity;
-          import android.content.pm.PackageManager;
-          import android.os.Bundle;
-          import android.webkit.GeolocationPermissions;
-          import android.webkit.WebChromeClient;
-          import android.webkit.WebSettings;
-          import android.webkit.WebView;
-          import android.webkit.WebViewClient;
+    .slider{
+      position:absolute;
+      inset:0;
+      background:#ccd3dc;
+      border-radius:30px;
+      cursor:pointer;
+    }
 
-          public class MainActivity extends Activity {
-              private static final int LOCATION_REQUEST = 1001;
-              private static final String START_URL =
-                      "https://raw.githubusercontent.com/compradormanv-glitch/aljust-taxi-android/main/index.html";
+    .slider:before{
+      content:"";
+      position:absolute;
+      width:22px;
+      height:22px;
+      left:3px;
+      top:3px;
+      background:#fff;
+      border-radius:50%;
+      transition:.2s;
+    }
 
-              private WebView webView;
+    .switch input:checked + .slider{
+      background:#173d72;
+    }
 
-              @Override
-              protected void onCreate(Bundle savedInstanceState) {
-                  super.onCreate(savedInstanceState);
+    .switch input:checked + .slider:before{
+      transform:translateX(22px);
+    }
+  </style>
 
-                  webView = new WebView(this);
-                  setContentView(webView);
+</head>
 
-                  WebSettings settings = webView.getSettings();
-                  settings.setJavaScriptEnabled(true);
-                  settings.setDomStorageEnabled(true);
-                  settings.setGeolocationEnabled(true);
-                  settings.setMediaPlaybackRequiresUserGesture(false);
+<body>
 
-                  webView.setWebViewClient(new WebViewClient());
-                  webView.setWebChromeClient(new WebChromeClient() {
-                      @Override
-                      public void onGeolocationPermissionsShowPrompt(
-                              String origin, GeolocationPermissions.Callback callback) {
-                          if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION)
-                                  == PackageManager.PERMISSION_GRANTED) {
-                              callback.invoke(origin, true, false);
-                          } else {
-                              callback.invoke(origin, false, false);
-                          }
-                      }
-                  });
+<header class="topbar">
+  <div class="logo">
+    AL<span>.just</span><small> Táxi</small>
+  </div>
 
-                  if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION)
-                          != PackageManager.PERMISSION_GRANTED) {
-                      requestPermissions(
-                              new String[] {
-                                  Manifest.permission.ACCESS_FINE_LOCATION,
-                                  Manifest.permission.ACCESS_COARSE_LOCATION
-                              },
-                              LOCATION_REQUEST
-                      );
-                  }
+  <button id="modeBtn" class="mode-btn">
+    👨🏽‍✈️ Motorista
+  </button>
+</header>
 
-                  webView.loadUrl(START_URL);
-              }
+<main>
 
-              @Override
-              public void onBackPressed() {
-                  if (webView != null && webView.canGoBack()) {
-                      webView.goBack();
-                  } else {
-                      super.onBackPressed();
-                  }
-              }
-          }
-          EOF
+  <!-- CLIENTE -->
 
-      - name: Compilar APK
-        run: gradle --no-daemon :app:assembleDebug
+  <section id="customerHome">
 
-      - name: Guardar APK
-        uses: actions/upload-artifact@v4
-        with:
-          name: Al.just-Taxi-APK
-          path: app/build/outputs/apk/debug/app-debug.apk
+```
+<section class="hero">
+  <p class="small">AL.JUST TÁXI</p>
+
+  <h1 id="pageTitle">
+    Pedir uma corrida
+  </h1>
+
+  <p id="pageSubtitle" class="muted">
+    Escolha o local de partida e o destino.
+  </p>
+</section>
+
+
+<section id="customerPanel" class="card">
+
+  <label>👤 Seu nome</label>
+
+  <input
+    id="customerName"
+    type="text"
+    placeholder="Ex.: Alberto"
+  >
+
+
+  <label>📍 Local de partida</label>
+
+  <input
+    id="pickupText"
+    type="text"
+    placeholder="Clique em Minha localização"
+  >
+
+
+  <label>🎯 Destino</label>
+
+  <input
+    id="destinationText"
+    type="text"
+    placeholder="Toque no mapa para marcar"
+  >
+
+
+  <div class="map-wrap">
+
+    <div id="map"></div>
+
+    <button
+      id="locationBtn"
+      class="map-locate"
+      type="button"
+    >
+      📍 Minha localização
+    </button>
+
+  </div>
+
+
+  <p class="hint">
+    Use o GPS para definir a partida e toque no mapa para escolher o destino.
+  </p>
+
+
+  <div class="row">
+
+    <div>
+      <label>👥 Passageiros</label>
+
+      <select id="passengers">
+        <option value="1">1</option>
+        <option value="2">2</option>
+        <option value="3">3</option>
+        <option value="4">4</option>
+      </select>
+    </div>
+
+
+    <div>
+      <label>🚕 Tipo de táxi</label>
+
+      <select id="carType">
+        <option value="normal">Al.just Normal</option>
+        <option value="confort">Al.just Confort</option>
+      </select>
+    </div>
+
+  </div>
+
+
+  <div class="estimate">
+
+    <div>
+      <span>Distância</span>
+      <strong id="distance">-- km</strong>
+    </div>
+
+    <div class="right">
+      <span>Estimativa</span>
+      <strong id="price">-- Kz</strong>
+    </div>
+
+  </div>
+
+
+  <button
+    id="requestBtn"
+    class="primary"
+    type="button"
+  >
+    🚕 Pedir táxi
+  </button>
+
+
+  <div
+    id="rideStatus"
+    class="status-box hidden"
+  ></div>
+
+
+  <div
+    id="driverCard"
+    class="driver-live hidden"
+  ></div>
+
+
+  <p
+    id="customerMessage"
+    class="message"
+  ></p>
+
+</section>
+```
+
+  </section>
+
+  <!-- MOTORISTA -->
+
+  <section
+    id="driverPanel"
+    class="card hidden"
+  >
+
+```
+<div class="section-title">
+
+  <h2>Painel do motorista</h2>
+
+  <span
+    id="driverConnection"
+    class="offline"
+  >
+    ● offline
+  </span>
+
+</div>
+
+
+<label>👨🏽‍✈️ Nome do motorista</label>
+
+<input
+  id="driverName"
+  type="text"
+  placeholder="Ex.: João"
+>
+
+
+<label>📞 Telefone</label>
+
+<input
+  id="driverPhone"
+  type="tel"
+  placeholder="Ex.: 926 000 000"
+>
+
+
+<div class="row">
+
+  <div>
+    <label>🚘 Viatura</label>
+
+    <input
+      id="driverCar"
+      type="text"
+      placeholder="Ex.: Suzuki"
+    >
+  </div>
+
+
+  <div>
+    <label>🔢 Matrícula</label>
+
+    <input
+      id="driverPlate"
+      type="text"
+      placeholder="Ex.: LD-00-00-AA"
+    >
+  </div>
+
+</div>
+
+
+<button
+  id="driverOnlineBtn"
+  class="primary secondary"
+  type="button"
+>
+  🟢 Ficar online
+</button>
+
+
+<div
+  id="activeRide"
+  class="status-box hidden"
+></div>
+
+
+<div
+  id="driverRequests"
+  class="requests"
+>
+  <div class="empty">
+    Entre online para receber pedidos dos clientes.
+  </div>
+</div>
+
+
+<p
+  id="driverMessage"
+  class="message"
+></p>
+```
+
+  </section>
+
+  <!-- CONTA / CONFIGURAÇÕES -->
+
+  <section
+    id="accountPanel"
+    class="account-card hidden"
+  >
+
+```
+<h2 class="account-title">
+  ⚙️ Configurações
+</h2>
+
+<p class="account-subtitle">
+  Gerencie os seus dados e preferências do Al.just Táxi.
+</p>
+
+
+<label>👤 Seu nome</label>
+
+<input
+  id="accountName"
+  type="text"
+  placeholder="Digite o seu nome"
+>
+
+
+<label>📞 Seu telefone</label>
+
+<input
+  id="accountPhone"
+  type="tel"
+  placeholder="Ex.: 926 163 681"
+>
+
+
+<button
+  id="saveAccountBtn"
+  class="save-account"
+  type="button"
+>
+  💾 Guardar dados
+</button>
+
+
+<p
+  id="accountMessage"
+  class="account-message"
+></p>
+
+
+<div class="settings-item">
+
+  <div class="settings-left">
+
+    <div class="settings-icon">
+      🔔
+    </div>
+
+    <div class="settings-text">
+
+      <strong>Notificações</strong>
+
+      <small>
+        Receber avisos sobre corridas
+      </small>
+
+    </div>
+
+  </div>
+
+
+  <label class="switch">
+
+    <input
+      id="notificationsToggle"
+      type="checkbox"
+      checked
+    >
+
+    <span class="slider"></span>
+
+  </label>
+
+</div>
+
+
+<div class="settings-item">
+
+  <div class="settings-left">
+
+    <div class="settings-icon">
+      📱
+    </div>
+
+    <div class="settings-text">
+
+      <strong>Aplicação</strong>
+
+      <small>
+        Al.just Táxi
+      </small>
+
+    </div>
+
+  </div>
+
+  <span style="color:#7a8494;font-size:13px;">
+    v1.0
+  </span>
+
+</div>
+
+
+<div class="settings-item">
+
+  <div class="settings-left">
+
+    <div class="settings-icon">
+      🏢
+    </div>
+
+    <div class="settings-text">
+
+      <strong>Empresa</strong>
+
+      <small>
+        Al.just Táxi — Angola
+      </small>
+
+    </div>
+
+  </div>
+
+</div>
+
+
+<button
+  id="backHomeBtn"
+  class="back-home"
+  type="button"
+>
+  ← Voltar para início
+</button>
+```
+
+  </section>
+
+</main>
+
+<!-- MENU INFERIOR -->
+
+<nav class="bottom-nav">
+
+<button
+id="bottomHome"
+class="active"
+type="button"
+
+>
+
+```
+🏠
+```
+
+```
+<span>Início</span>
+```
+
+  </button>
+
+<button
+id="bottomMode"
+type="button"
+
+>
+
+```
+👨🏽‍✈️
+```
+
+```
+<span>Motorista</span>
+```
+
+  </button>
+
+<button
+id="bottomAccount"
+type="button"
+
+>
+
+```
+⚙️
+```
+
+```
+<span>Conta</span>
+```
+
+  </button>
+
+</nav>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<script src="config.js"></script>
+
+<script src="app.js"></script>
+
+<script>
+
+const accountPanel =
+  document.getElementById("accountPanel");
+
+const customerHome =
+  document.getElementById("customerHome");
+
+const driverPanel =
+  document.getElementById("driverPanel");
+
+const bottomHome =
+  document.getElementById("bottomHome");
+
+const bottomMode =
+  document.getElementById("bottomMode");
+
+const bottomAccount =
+  document.getElementById("bottomAccount");
+
+const backHomeBtn =
+  document.getElementById("backHomeBtn");
+
+const saveAccountBtn =
+  document.getElementById("saveAccountBtn");
+
+const accountName =
+  document.getElementById("accountName");
+
+const accountPhone =
+  document.getElementById("accountPhone");
+
+const accountMessage =
+  document.getElementById("accountMessage");
+
+const customerName =
+  document.getElementById("customerName");
+
+
+function showAccount(){
+
+  customerHome.classList.add("hidden");
+
+  driverPanel.classList.add("hidden");
+
+  accountPanel.classList.remove("hidden");
+
+  bottomHome.classList.remove("active");
+
+  bottomMode.classList.remove("active");
+
+  bottomAccount.classList.add("active");
+
+}
+
+
+function showHome(){
+
+  accountPanel.classList.add("hidden");
+
+  driverPanel.classList.add("hidden");
+
+  customerHome.classList.remove("hidden");
+
+  bottomHome.classList.add("active");
+
+  bottomMode.classList.remove("active");
+
+  bottomAccount.classList.remove("active");
+
+  setTimeout(function(){
+
+    if(typeof map !== "undefined" && map){
+      map.invalidateSize();
+    }
+
+  },150);
+
+}
+
+
+function showDriver(){
+
+  accountPanel.classList.add("hidden");
+
+  customerHome.classList.add("hidden");
+
+  driverPanel.classList.remove("hidden");
+
+  bottomHome.classList.remove("active");
+
+  bottomMode.classList.add("active");
+
+  bottomAccount.classList.remove("active");
+
+}
+
+
+function loadAccount(){
+
+  accountName.value =
+    localStorage.getItem("aljust_customer_name") || "";
+
+  accountPhone.value =
+    localStorage.getItem("aljust_customer_phone") || "";
+
+}
+
+
+bottomAccount.addEventListener(
+  "click",
+  showAccount
+);
+
+
+bottomHome.addEventListener(
+  "click",
+  function(){
+
+    showHome();
+
+    if(typeof setMode === "function"){
+      setMode("customer");
+    }
+
+  }
+);
+
+
+bottomMode.addEventListener(
+  "click",
+  function(){
+
+    showDriver();
+
+    if(typeof setMode === "function"){
+      setMode("driver");
+    }
+
+  }
+);
+
+
+backHomeBtn.addEventListener(
+  "click",
+  function(){
+
+    showHome();
+
+    if(typeof setMode === "function"){
+      setMode("customer");
+    }
+
+  }
+);
+
+
+saveAccountBtn.addEventListener(
+  "click",
+  function(){
+
+    const name =
+      accountName.value.trim();
+
+    const phone =
+      accountPhone.value.trim();
+
+    localStorage.setItem(
+      "aljust_customer_name",
+      name
+    );
+
+    localStorage.setItem(
+      "aljust_customer_phone",
+      phone
+    );
+
+    if(customerName){
+      customerName.value = name;
+    }
+
+    accountMessage.textContent =
+      "✅ Dados guardados com sucesso.";
+
+  }
+);
+
+
+loadAccount();
+
+
+const savedCustomerName =
+  localStorage.getItem("aljust_customer_name");
+
+
+if(savedCustomerName && customerName){
+
+  customerName.value =
+    savedCustomerName;
+
+}
+
+</script>
+
+</body>
+</html>
+
