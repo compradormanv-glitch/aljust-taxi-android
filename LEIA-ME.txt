@@ -1,0 +1,17 @@
+AL.just Táxi — correção do build
+
+Este pacote contém o novo main.yml.
+
+Objetivo:
+- Corrigir o erro "task 'assembleDebug' not found in project ':app'".
+- Criar automaticamente o módulo Android app/ durante o GitHub Actions.
+- Gerar o APK de teste Al.just Táxi.
+
+Uso:
+1. Extraia o ZIP.
+2. Abra main.yml no Bloco de Notas.
+3. No GitHub, abra .github/workflows/main.yml.
+4. Clique no lápis (Editar).
+5. Apague o conteúdo antigo e cole o conteúdo do novo main.yml.
+6. Faça Commit changes.
+7. Abra Actions e aguarde o novo build.
