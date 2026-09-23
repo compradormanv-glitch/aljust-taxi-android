@@ -34,6 +34,10 @@ jobs:
       - name: Criar estrutura Android
         shell: bash
         run: |
+          set -e
+
+          rm -rf app
+
           mkdir -p app/src/main/java/ao/aljust/taxi
           mkdir -p app/src/main/assets
 
@@ -42,9 +46,10 @@ jobs:
           cp app.js app/src/main/assets/app.js
           cp config.js app/src/main/assets/config.js
           cp manifest.json app/src/main/assets/manifest.json
-          cp sw.js app/src/main/assets/sw.js
-          cp icon-192.png app/src/main/assets/icon-192.png
-          cp icon-512.png app/src/main/assets/icon-512.png
+
+          [ -f sw.js ] && cp sw.js app/src/main/assets/sw.js || true
+          [ -f icon-192.png ] && cp icon-192.png app/src/main/assets/icon-192.png || true
+          [ -f icon-512.png ] && cp icon-512.png app/src/main/assets/icon-512.png || true
 
           cat > settings.gradle.kts <<'EOF'
           pluginManagement {
@@ -73,7 +78,7 @@ jobs:
           }
           EOF
 
-          cat > app/build.gradle.kts <<'EOF'
+          cat > app/build.gradle.kts <<EOF
           plugins {
               id("com.android.application")
           }
@@ -84,15 +89,25 @@ jobs:
 
               defaultConfig {
                   applicationId = "ao.aljust.taxi"
-                  minSdk = 24
+                  minSdk = 21
                   targetSdk = 35
-                  versionCode = 1
-                  versionName = "1.0"
+                  versionCode = ${GITHUB_RUN_NUMBER}
+                  versionName = "1.0.${GITHUB_RUN_NUMBER}"
               }
 
               compileOptions {
                   sourceCompatibility = JavaVersion.VERSION_17
                   targetCompatibility = JavaVersion.VERSION_17
+              }
+
+              buildTypes {
+                  debug {
+                      isMinifyEnabled = false
+                  }
+
+                  release {
+                      isMinifyEnabled = false
+                  }
               }
           }
           EOF
@@ -108,7 +123,8 @@ jobs:
               <application
                   android:allowBackup="true"
                   android:label="Al.just Táxi"
-                  android:theme="@android:style/Theme.Material.Light.NoActionBar">
+                  android:theme="@android:style/Theme.Material.Light.NoActionBar"
+                  android:usesCleartextTraffic="true">
 
                   <activity
                       android:name=".MainActivity"
@@ -152,6 +168,7 @@ jobs:
                   settings.setAllowContentAccess(true);
 
                   webView.setWebViewClient(new WebViewClient());
+
                   webView.loadUrl("file:///android_asset/index.html");
 
                   setContentView(webView);
@@ -171,8 +188,29 @@ jobs:
       - name: Compilar APK
         run: gradle --no-daemon :app:assembleDebug
 
+      - name: Verificar APK
+        shell: bash
+        run: |
+          set -e
+
+          APK="app/build/outputs/apk/debug/app-debug.apk"
+
+          test -f "$APK"
+
+          echo "APK encontrado:"
+          ls -lh "$APK"
+
+          echo "Validando arquivo APK:"
+          unzip -t "$APK" >/dev/null
+
+          echo "Validando pacote Android:"
+          AAPT=$(find "$ANDROID_HOME/build-tools" -type f -name aapt | sort | tail -1)
+
+          "$AAPT" dump badging "$APK"
+
       - name: Guardar APK
         uses: actions/upload-artifact@v4
         with:
           name: Al.just-Taxi-APK
           path: app/build/outputs/apk/debug/app-debug.apk
+          if-no-files-found: error
