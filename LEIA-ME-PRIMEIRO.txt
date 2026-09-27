@@ -1,0 +1,69 @@
+AL.JUST — CORREÇÃO DEFINITIVA DA PESQUISA V3
+
+Este ZIP foi feito para o seu site atual, que ainda mostra:
+"Resultados enquanto escreve"
+
+A versão V3 usa APENAS 1 ficheiro JavaScript.
+O próprio JavaScript inclui o CSS necessário.
+
+PASSOS:
+
+1) Abra o repositório:
+compradormanv-glitch/aljust-loja
+
+2) Faça upload do ficheiro:
+pesquisa-fix-v3.js
+
+Ele deve ficar na mesma área onde estão:
+index.html
+logo.jpg
+etc.
+
+3) Abra index.html no GitHub.
+
+4) Vá até o FINAL do ficheiro.
+
+No seu index.html atual, o final é parecido com:
+
+})();
+</script></body></html>
+
+5) Cole esta linha ENTRE </script> e </body>:
+
+<script src="pesquisa-fix-v3.js?v=3"></script>
+
+O final deve ficar assim:
+
+})();
+</script>
+<script src="pesquisa-fix-v3.js?v=3"></script>
+</body></html>
+
+6) Clique em "Commit changes".
+
+7) Aguarde 1 a 3 minutos.
+
+8) Abra o site e pressione:
+Ctrl + F5
+
+RESULTADO ESPERADO:
+- desaparece "Resultados enquanto escreve";
+- fundo da página fica escurecido;
+- caixa branca centralizada;
+- título "Resultados da pesquisa";
+- até 6 produtos;
+- imagem à esquerda;
+- nome e categoria ao centro;
+- preço vermelho;
+- "Disponível" verde;
+- botão "Ver todos os resultados".
+
+IMPORTANTE:
+Não apague o código antigo da pesquisa.
+A V3 transforma automaticamente o resultado antigo depois que ele é criado.
+
+Se o navegador ainda guardar a versão antiga, mude:
+?v=3
+para:
+?v=4
+e faça Ctrl + F5 novamente.
