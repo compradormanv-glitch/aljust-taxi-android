@@ -1,168 +1,69 @@
-name: Build Al.just Táxi APK
+<!doctype html>
+<html lang="pt-AO">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Al.just | Loja Online</title>
+<meta name="description" content="Al.just - material informático, de escritório e escolar.">
+<link rel="icon" href="logo.jpg">
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:Arial,Helvetica,sans-serif;color:#152436;background:#fff}button,input,select{font:inherit}a{text-decoration:none;color:inherit}
+.topbar{background:#08233f;color:#fff;padding:9px 5%;display:flex;justify-content:space-between;font-size:13px}.header{display:flex;align-items:center;gap:20px;padding:14px 5%;background:#fff;border-bottom:1px solid #ddd;position:sticky;top:0;z-index:5}.brand img{width:170px;height:72px;object-fit:contain}.search{display:flex;flex:1;max-width:700px}.search input{flex:1;padding:13px;border:1px solid #ddd;border-radius:10px 0 0 10px}.search button{padding:0 18px;border:0;background:#0a2f52;color:#fff;border-radius:0 10px 10px 0}.cart{border:0;background:#fff;font-weight:700}.cart b{background:#e21b23;color:#fff;border-radius:99px;padding:4px 8px}nav{background:#0a2f52;color:#fff;display:flex;justify-content:center;gap:28px;padding:12px}nav a{font-weight:bold}.hero{margin:28px 5%;padding:50px;border-radius:24px;background:#f4f8fd;display:grid;grid-template-columns:1fr 1fr;gap:25px}.eyebrow{color:#e21b23;font-weight:800;font-size:12px;letter-spacing:.08em}.hero h1{font-size:50px;color:#08233f}.hero p{font-size:18px;color:#617184}.hero-art{background:#0a2f52;color:#fff;border-radius:20px;display:grid;place-items:center;font-size:70px}.btn{padding:13px 18px;border:0;border-radius:9px;cursor:pointer}.red{background:#e21b23;color:#fff}.ghost{background:#eef3f7;color:#152436}.section{padding:42px 5%}.cats{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:18px}.cats button{text-align:left;border:0;border-radius:16px;padding:25px;background:#0c4a78;color:#fff;cursor:pointer}.cats button:nth-child(2){background:#e21b23}.cats button:nth-child(3){background:#08233f}.cats b,.cats small{display:block;margin-top:9px}.headrow{display:flex;justify-content:space-between;align-items:end}.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-top:20px}.card{border:1px solid #dfe6ee;border-radius:15px;overflow:hidden;display:flex;flex-direction:column}.media{height:200px;background:#f5f7fa;display:grid;place-items:center;font-size:70px}.media img{width:100%;height:100%;object-fit:contain;padding:12px}.body{padding:15px;display:flex;flex-direction:column;gap:8px}.body small{color:#e21b23;font-weight:800}.body h3{margin:0}.body p{color:#617184}.price{color:#e21b23;font-size:20px}.stock{color:#617184;font-size:12px}.add{margin-top:auto;background:#e21b23;color:#fff;border:0;border-radius:8px;padding:10px;font-weight:bold;cursor:pointer}.empty{padding:30px;text-align:center;color:#617184}.benefits{margin:0 5%;padding:18px;background:#f2f6fa;border-radius:14px;display:grid;grid-template-columns:repeat(4,1fr);gap:10px}footer{background:#08233f;color:#fff;padding:35px 5%;margin-top:40px}footer img{width:140px;height:60px;object-fit:contain;background:#fff;border-radius:8px}.muted{color:#617184}.drawer{position:fixed;right:-560px;top:0;width:min(560px,96vw);height:100vh;background:#fff;z-index:20;box-shadow:-15px 0 40px #0003;padding:20px;transition:.25s;overflow:auto}.drawer.show{right:0}.drawerhead{display:flex;justify-content:space-between;align-items:center}.drawerhead button{border:0;background:none;font-size:20px;cursor:pointer}.line{border-bottom:1px solid #ddd;padding:14px 0}.lineInfo{display:flex;align-items:center;gap:10px}.lineInfo img{width:55px;height:55px;object-fit:contain;background:#f2f4f7;border-radius:7px}.lineInfo span{display:block;color:#617184;font-size:12px;margin-top:3px}.qty{display:flex;align-items:center;gap:7px;margin:8px 0}.qty button{border:1px solid #d5dde5;background:#fff;border-radius:7px;min-width:32px;height:32px;cursor:pointer}.qty .remove{margin-left:auto;border:0;color:#b51218}.total{display:flex;justify-content:space-between;font-size:20px;border-top:1px solid #ddd;padding:16px 0}.full{width:100%}.overlay{position:fixed;inset:0;background:#0006;z-index:10;display:none}.overlay.show{display:block}
 
-on:
-  push:
-    branches: ["main"]
-  workflow_dispatch:
+.search-overlay{position:fixed;inset:0;background:rgba(8,35,63,.42);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);z-index:40;display:none;padding:108px 5% 30px;overflow:auto}.search-overlay.show{display:block}.search-panel{max-width:1050px;margin:0 auto;background:#fff;border-radius:18px;box-shadow:0 22px 60px #0003;overflow:hidden}.search-panel-head{display:flex;justify-content:space-between;align-items:center;padding:18px 22px;border-bottom:1px solid #e7edf3}.search-title{font-size:18px;font-weight:800;color:#08233f}.search-summary{font-size:12px;color:#728095;margin-left:10px}.search-close{border:0;background:#eef3f7;color:#4d5d70;border-radius:8px;width:34px;height:34px;cursor:pointer}.search-results{max-height:min(68vh,620px);overflow:auto}.search-result{display:grid;grid-template-columns:72px 1fr auto;gap:16px;align-items:center;padding:14px 22px;border-bottom:1px solid #edf1f5;cursor:pointer;transition:background .15s}.search-result:hover{background:#f7fafc}.search-thumb{width:72px;height:72px;border-radius:12px;background:#f5f7fa;display:grid;place-items:center;overflow:hidden;font-size:34px}.search-thumb img{width:100%;height:100%;object-fit:contain;padding:8px}.search-main{min-width:0}.search-main h4{margin:0 0 5px;color:#14213d;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.search-meta{color:#728095;font-size:12px}.search-price{text-align:right;white-space:nowrap}.search-price strong{display:block;color:#e21b23;font-size:16px}.search-stock{font-size:11px;font-weight:700;color:#17803a;margin-top:4px;display:inline-flex;align-items:center;gap:5px}.search-stock:before{content:"";width:7px;height:7px;border-radius:50%;background:#1aa05a;display:inline-block}.search-empty{padding:36px 22px;text-align:center;color:#718096}.search-more{padding:14px 22px;text-align:center;color:#0a2f52;font-weight:800;font-size:12px;background:#fbfcfd}.search-more button{border:0;background:none;color:#0a2f52;font-weight:800;cursor:pointer}
+.search{position:relative}
+@media(max-width:700px){.search-overlay{padding:92px 12px 18px}.search-result{grid-template-columns:58px 1fr;gap:12px;padding:13px 15px}.search-thumb{width:58px;height:58px}.search-price{grid-column:2;text-align:left;margin-top:-6px}.search-panel-head{padding:15px}.search-summary{display:block;margin:4px 0 0}.search-results{max-height:72vh}}
+@media(max-width:900px){.grid{grid-template-columns:repeat(2,1fr)}.cats,.benefits{grid-template-columns:1fr}.hero{grid-template-columns:1fr;padding:30px}.hero h1{font-size:38px}}@media(max-width:600px){.topbar,.header{flex-wrap:wrap}.search{order:3;flex-basis:100%}.grid{grid-template-columns:1fr}.headrow{align-items:start;flex-direction:column}nav{overflow:auto;justify-content:start}}
+</style>
+</head>
+<body>
+<div class="topbar"><span>Entrega em Angola • Atendimento rápido</span><span>WhatsApp: +244 926 163 681</span></div>
+<header class="header">
+<a href="#inicio" class="brand" id="ownerLogo" title="Al.just"><img src="logo.jpg" alt="Al.just"></a>
+<div class="search" id="searchBox"><input id="search" placeholder="Pesquisar produtos..." autocomplete="off"><button id="searchBtn">🔎</button></div>
+<button class="cart" id="openCart">🛒 Carrinho <b id="cartCount">0</b></button>
+</header>
+<nav><a href="#inicio">Início</a><a href="#categorias">Categorias</a><a href="#produtos">Produtos</a><a href="#sobre">Sobre Nós</a><a href="#contacto">Contacto</a></nav>
+<div id="searchOverlay" class="search-overlay" aria-hidden="true"><div class="search-panel" role="dialog" aria-label="Resultados da pesquisa"><div class="search-panel-head"><div><span class="search-title">⌕ Resultados da pesquisa</span><span id="searchSummary" class="search-summary"></span></div><button id="closeSearch" class="search-close" aria-label="Fechar pesquisa">✕</button></div><div id="searchResults" class="search-results"></div></div></div>
+<main>
+<section class="hero" id="inicio"><div><span class="eyebrow">LOJA ONLINE AL.JUST</span><h1>Tecnologia, escritório e educação num só lugar.</h1><p>Escolha os produtos para estudar, trabalhar e equipar o seu negócio.</p><a class="btn red" href="#produtos">Ver produtos</a></div><div class="hero-art">💻 🖨️ 📚</div></section>
+<section class="section" id="categorias"><span class="eyebrow">CATEGORIAS</span><h2>O que procura?</h2><div class="cats"><button data-cat="Informática">💻 <b>Material Informático</b><small>Computadores, impressoras e acessórios.</small></button><button data-cat="Escritório">🖨️ <b>Material de Escritório</b><small>Papel, canetas, pastas e mais.</small></button><button data-cat="Escolar">🎒 <b>Material Escolar</b><small>Cadernos, mochilas, lápis e mais.</small></button></div></section>
+<section class="section" id="produtos"><div class="headrow"><div><span class="eyebrow">CATÁLOGO</span><h2>Produtos</h2><p id="status">A carregar...</p></div><select id="filter"><option>Todos</option><option>Informática</option><option>Escritório</option><option>Escolar</option></select></div><div id="grid" class="grid"></div><p id="empty" class="empty" hidden>Nenhum produto encontrado.</p></section>
+<section class="benefits"><div>🛡️ <b>Compra segura</b></div><div>🚚 <b>Entrega em Angola</b></div><div>💬 <b>Atendimento WhatsApp</b></div><div>✅ <b>Qualidade</b></div></section>
+<section class="section" id="sobre"><span class="eyebrow">SOBRE</span><h2>Al.just</h2><p>Loja de material informático, de escritório e escolar.</p></section>
+<section class="section" id="contacto"><span class="eyebrow">CONTACTO</span><h2>Fale connosco</h2><a href="https://wa.me/244926163681" target="_blank" rel="noopener">💬 WhatsApp — +244 926 163 681</a></section>
+</main>
+<footer><img src="logo.jpg" alt="Al.just"><p>© <span id="year"></span> Al.just. Todos os direitos reservados.</p></footer>
+<aside id="drawer" class="drawer"><div class="drawerhead"><h3>Seu carrinho</h3><button id="closeCart">✕</button></div><div id="cartItems"></div><div class="total"><span>Total</span><b id="total">0 Kz</b></div><a class="btn red full" href="https://wa.me/244926163681" target="_blank" rel="noopener" id="checkoutBtn">Finalizar pelo WhatsApp</a></aside><div id="overlay" class="overlay"></div>
+<script>
+const KEY='aljust_products_v2', CART='aljust_cart_v2';
+let products=[]; let cart=JSON.parse(localStorage.getItem(CART)||'[]'); const $=id=>document.getElementById(id); const money=n=>new Intl.NumberFormat('pt-AO').format(Number(n||0))+' Kz';
+const esc=v=>String(v??'').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;').replaceAll("'",'&#039;');
+function loadProducts(){try{products=JSON.parse(localStorage.getItem(KEY)||'[]')}catch(e){products=[]} $('status').textContent=products.length?products.length+' produto(s) disponíveis':'Ainda não há produtos publicados.';renderProducts();renderCart()}
+function renderProducts(){
+ const q=$('search').value.trim().toLowerCase(),cat=$('filter').value;
+ const list=products.filter(p=>Number(p.stock)>0&&(cat==='Todos'||p.category===cat)&&(!q||`${p.name} ${p.category||''} ${p.description||''}`.toLowerCase().includes(q)));
+ $('grid').innerHTML=list.map(p=>`<article class="card"><div class="media">${p.image?`<img src="${esc(p.image)}" alt="${esc(p.name)}">`:'📦'}</div><div class="body"><small>${esc(p.category||'Produto')}</small><h3>${esc(p.name)}</h3>${p.description?`<p>${esc(p.description)}</p>`:''}<strong class="price">${money(p.price)}</strong><span class="stock">${Number(p.stock)} unidade(s) disponíveis</span><button class="add" onclick="addToCart('${p.id}')">Adicionar ao carrinho</button></div></article>`).join('');$('empty').hidden=!!list.length;
+ renderSearchResults(q,list);
+}
+function renderSearchResults(q,list){
+ const overlay=$('searchOverlay'),results=$('searchResults'),summary=$('searchSummary');
+ if(!q){overlay.classList.remove('show');overlay.setAttribute('aria-hidden','true');results.innerHTML='';summary.textContent='';return}
+ overlay.classList.add('show');overlay.setAttribute('aria-hidden','false');summary.textContent=`${list.length} resultado${list.length===1?'':'s'} encontrado${list.length===1?'':'s'}`;
+ if(!list.length){results.innerHTML='<div class="search-empty">Nenhum produto encontrado para esta pesquisa.</div>';return}
+ const shown=list.slice(0,8);
+ results.innerHTML=shown.map(p=>`<div class="search-result" data-id="${esc(p.id)}"><div class="search-thumb">${p.image?`<img src="${esc(p.image)}" alt="${esc(p.name)}">`:'📦'}</div><div class="search-main"><h4>${esc(p.name)}</h4><div class="search-meta">${esc(p.category||'Produto')}${p.subcategory?` • ${esc(p.subcategory)}`:''}</div></div><div class="search-price"><strong>${money(p.price)}</strong><span class="search-stock">Disponível</span></div></div>`).join('') + (list.length>8?'<div class="search-more"><button type="button" id="viewAllResults">Ver todos os resultados →</button></div>':'');
+ results.querySelectorAll('.search-result').forEach(row=>row.onclick=()=>{const id=row.dataset.id;const p=products.find(x=>String(x.id)===String(id));$('searchOverlay').classList.remove('show');$('searchOverlay').setAttribute('aria-hidden','true');if(p){$('search').value=p.name;$('filter').value='Todos';renderProducts();document.getElementById('produtos').scrollIntoView({behavior:'smooth'});}});
+ const allBtn=$('viewAllResults'); if(allBtn) allBtn.onclick=()=>{ $('searchOverlay').classList.remove('show'); $('searchOverlay').setAttribute('aria-hidden','true'); document.getElementById('produtos').scrollIntoView({behavior:'smooth'}); };
+}
 
-permissions:
-  contents: read
-
-jobs:
-  build:
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Baixar código
-        uses: actions/checkout@v4
-
-      - name: Configurar Java 17
-        uses: actions/setup-java@v5
-        with:
-          distribution: temurin
-          java-version: "17"
-
-      - name: Configurar Android SDK
-        uses: android-actions/setup-android@v4
-
-      - name: Configurar Gradle
-        uses: gradle/actions/setup-gradle@v4
-        with:
-          gradle-version: "8.9"
-
-      - name: Criar estrutura Android
-        shell: bash
-        run: |
-          mkdir -p app/src/main/java/ao/aljust/taxi
-          mkdir -p app/src/main/assets
-
-          cp index.html app/src/main/assets/
-          cp style.css app/src/main/assets/
-          cp app.js app/src/main/assets/
-          cp config.js app/src/main/assets/
-          cp manifest.json app/src/main/assets/
-          cp sw.js app/src/main/assets/
-          cp icon-192.png app/src/main/assets/
-          cp icon-512.png app/src/main/assets/
-
-          cat > app/build.gradle.kts <<'EOF'
-          plugins {
-              id("com.android.application")
-          }
-
-          android {
-              namespace = "ao.aljust.taxi"
-              compileSdk = 35
-
-              defaultConfig {
-                  applicationId = "ao.aljust.taxi"
-                  minSdk = 24
-                  targetSdk = 35
-                  versionCode = 1
-                  versionName = "1.0"
-              }
-
-              compileOptions {
-                  sourceCompatibility = JavaVersion.VERSION_17
-                  targetCompatibility = JavaVersion.VERSION_17
-              }
-
-              sourceSets {
-                  getByName("main") {
-                      assets.srcDir("src/main/assets")
-                  }
-              }
-
-              buildTypes {
-                  release {
-                      isMinifyEnabled = false
-                  }
-              }
-          }
-
-          dependencies {
-              implementation("androidx.webkit:webkit:1.17.0")
-          }
-          EOF
-
-          cat > app/src/main/AndroidManifest.xml <<'EOF'
-          <?xml version="1.0" encoding="utf-8"?>
-          <manifest xmlns:android="http://schemas.android.com/apk/res/android">
-
-              <uses-permission android:name="android.permission.INTERNET" />
-              <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-              <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-
-              <application
-                  android:allowBackup="true"
-                  android:label="Al.just Táxi"
-                  android:theme="@android:style/Theme.Material.Light.NoActionBar"
-                  android:usesCleartextTraffic="true">
-
-                  <activity
-                      android:name=".MainActivity"
-                      android:exported="true">
-
-                      <intent-filter>
-                          <action android:name="android.intent.action.MAIN" />
-                          <category android:name="android.intent.category.LAUNCHER" />
-                      </intent-filter>
-
-                  </activity>
-
-              </application>
-
-          </manifest>
-          EOF
-
-          cat > app/src/main/java/ao/aljust/taxi/MainActivity.java <<'EOF'
-          package ao.aljust.taxi;
-
-          import android.app.Activity;
-          import android.os.Bundle;
-          import android.webkit.WebSettings;
-          import android.webkit.WebView;
-          import android.webkit.WebViewClient;
-
-          public class MainActivity extends Activity {
-
-              private WebView webView;
-
-              @Override
-              protected void onCreate(Bundle savedInstanceState) {
-                  super.onCreate(savedInstanceState);
-
-                  webView = new WebView(this);
-
-                  WebSettings settings = webView.getSettings();
-                  settings.setJavaScriptEnabled(true);
-                  settings.setDomStorageEnabled(true);
-                  settings.setAllowFileAccess(true);
-                  settings.setAllowContentAccess(true);
-
-                  webView.setWebViewClient(new WebViewClient());
-
-                  webView.loadUrl("file:///android_asset/index.html");
-
-                  setContentView(webView);
-              }
-
-              @Override
-              public void onBackPressed() {
-                  if (webView.canGoBack()) {
-                      webView.goBack();
-                  } else {
-                      super.onBackPressed();
-                  }
-              }
-          }
-          EOF
-
-      - name: Compilar APK
-        run: gradle --no-daemon :app:assembleDebug
-
-      - name: Guardar APK
-        uses: actions/upload-artifact@v4
-        with:
-          name: Al.just-Taxi-APK
-          path: app/build/outputs/apk/debug/app-debug.apk
+function addToCart(id){const p=products.find(x=>x.id===id);if(!p)return;const i=cart.find(x=>x.id===id);if(i){if(i.qty<Number(p.stock))i.qty++}else cart.push({id,qty:1});saveCart();openCart()}
+function changeQty(id,d){const i=cart.find(x=>x.id===id),p=products.find(x=>x.id===id);if(!i||!p)return;i.qty=Math.max(1,Math.min(Number(p.stock),i.qty+d));saveCart()}
+function removeItem(id){cart=cart.filter(i=>i.id!==id);saveCart()}
+function saveCart(){localStorage.setItem(CART,JSON.stringify(cart));renderCart()}
+function renderCart(){cart=cart.filter(i=>products.some(p=>p.id===i.id));let total=0,count=0;$('cartItems').innerHTML=cart.length?cart.map(i=>{const p=products.find(x=>x.id===i.id),sub=Number(p.price)*i.qty;total+=sub;count+=i.qty;return `<div class="line"><div class="lineInfo">${p.image?`<img src="${esc(p.image)}" alt="">`:'📦'}<div><strong>${esc(p.name)}</strong><span>${money(p.price)} cada</span></div></div><div class="qty"><button onclick="changeQty('${p.id}',-1)">−</button><b>${i.qty}</b><button onclick="changeQty('${p.id}',1)">+</button><button class="remove" onclick="removeItem('${p.id}')">🗑️</button></div><strong>${money(sub)}</strong></div>`}).join(''):`<p class="muted">O carrinho está vazio.</p>`;$('cartCount').textContent=count;$('total').textContent=money(total)}
+function openCart(){$('drawer').classList.add('show');$('overlay').classList.add('show')}function closeCart(){$('drawer').classList.remove('show');$('overlay').classList.remove('show')}
+$('search').oninput=renderProducts;$('searchBtn').onclick=()=>{renderProducts();if($('search').value.trim())$('searchOverlay').classList.add('show')};$('filter').onchange=renderProducts;$('closeSearch').onclick=()=>{$('searchOverlay').classList.remove('show');$('searchOverlay').setAttribute('aria-hidden','true')};$('searchOverlay').addEventListener('click',e=>{if(e.target.id==='searchOverlay'){$('searchOverlay').classList.remove('show');$('searchOverlay').setAttribute('aria-hidden','true')}});document.addEventListener('keydown',e=>{if(e.key==='Escape'){$('searchOverlay').classList.remove('show');$('searchOverlay').setAttribute('aria-hidden','true')}});$('openCart').onclick=openCart;$('closeCart').onclick=closeCart;$('overlay').onclick=closeCart;
+document.querySelectorAll('.cats button').forEach(b=>b.onclick=()=>{$('filter').value=b.dataset.cat;renderProducts();$('produtos').scrollIntoView({behavior:'smooth'})});
+let clicks=0,timer=null;$('ownerLogo').addEventListener('click',e=>{e.preventDefault();clicks++;clearTimeout(timer);timer=setTimeout(()=>{clicks=0},1800);if(clicks===5){clicks=0;location.href='admin.html'}});
+$('year').textContent=new Date().getFullYear();loadProducts();
+</script></body></html>
