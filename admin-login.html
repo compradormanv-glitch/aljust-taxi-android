@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="pt">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Al.just — Acesso administrativo</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#f3f6fa;color:#16263d;min-height:100vh;display:grid;place-items:center;padding:20px}.card{width:min(430px,100%);background:#fff;border:1px solid #dfe6ee;border-radius:20px;box-shadow:0 20px 55px #081d3514;padding:32px}.brand{display:flex;justify-content:center;align-items:center;margin-bottom:22px}.brand span{font-size:34px;font-weight:900;letter-spacing:-1px}.al{color:#e21b23}.just{color:#08233f}.eyebrow{display:block;text-align:center;color:#e21b23;font-size:12px;font-weight:800;letter-spacing:.08em;margin-bottom:7px}.title{font-size:28px;text-align:center;margin:0 0 8px}.sub{color:#64748b;text-align:center;line-height:1.5;margin:0 0 24px}label{display:block;font-size:13px;font-weight:700;margin:13px 0 6px}input{width:100%;padding:12px 13px;border:1px solid #d4dce6;border-radius:10px;outline:none}input:focus{border-color:#0a2f52;box-shadow:0 0 0 3px #0a2f5212}.btn{width:100%;margin-top:20px;border:0;border-radius:10px;padding:13px;background:#08233f;color:#fff;font-weight:800;cursor:pointer}.btn:hover{background:#0a2f52}.error{margin-top:14px;background:#fff0f0;color:#8b1a1a;border-radius:9px;padding:10px 12px;font-size:13px;display:none}.back{display:block;text-align:center;margin-top:18px;color:#08233f;font-size:13px}
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="brand"><span class="al">AL</span><span class="just">.just</span></div>
+  <span class="eyebrow">ACESSO RESTRITO</span>
+  <h1 class="title">Área do administrador</h1>
+  <p class="sub">Introduza as credenciais uma única vez para entrar no painel. Depois de entrar, o cadastro de produtos não pedirá uma segunda senha.</p>
+  <form id="loginForm" autocomplete="off">
+    <label for="username">Utilizador</label>
+    <input id="username" autocomplete="username" required>
+    <label for="password">Palavra-passe</label>
+    <input id="password" type="password" autocomplete="current-password" required>
+    <button class="btn" type="submit">Entrar no administrador</button>
+  </form>
+  <div id="error" class="error" role="alert">Utilizador ou palavra-passe incorretos.</div>
+  <a class="back" href="index.html">← Voltar à loja</a>
+</div>
+<script>
+const USERNAME="admin";
+const PASSWORD="Aljust@2026";
+document.getElementById("loginForm").addEventListener("submit",function(e){
+  e.preventDefault();
+  const user=document.getElementById("username").value.trim();
+  const pass=document.getElementById("password").value;
+  const err=document.getElementById("error");
+  if(user===USERNAME && pass===PASSWORD){
+    sessionStorage.setItem("aljust_admin_authenticated","1");
+    window.location.replace("admin.html");
+  }else{
+    err.style.display="block";
+    document.getElementById("password").focus();
+  }
+});
+</script>
+</body>
+</html>
