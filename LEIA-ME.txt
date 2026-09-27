@@ -1,17 +1,64 @@
-AL.just Táxi — correção do build
+AL.JUST — CORREÇÃO DA PESQUISA (MODELO FINAL)
 
-Este pacote contém o novo main.yml.
+Objetivo
+--------
+Fazer a caixa de pesquisa aparecer como no modelo aprovado:
+• fundo do site escurecido;
+• caixa branca compacta;
+• título "Resultados da pesquisa";
+• contador de resultados;
+• máximo de 6 produtos visíveis;
+• imagem do produto;
+• nome + categoria/subcategoria;
+• preço vermelho;
+• estado "Disponível" em verde;
+• botão "Ver todos os resultados";
+• visual adaptado para telemóvel.
 
-Objetivo:
-- Corrigir o erro "task 'assembleDebug' not found in project ':app'".
-- Criar automaticamente o módulo Android app/ durante o GitHub Actions.
-- Gerar o APK de teste Al.just Táxi.
+IMPORTANTE
+----------
+Esta correção NÃO mexe no Supabase, nos produtos, no carrinho, no login nem no painel de administração.
+Ela aproveita a pesquisa que o seu site já tem e apenas transforma a apresentação visual.
 
-Uso:
-1. Extraia o ZIP.
-2. Abra main.yml no Bloco de Notas.
-3. No GitHub, abra .github/workflows/main.yml.
-4. Clique no lápis (Editar).
-5. Apague o conteúdo antigo e cole o conteúdo do novo main.yml.
-6. Faça Commit changes.
-7. Abra Actions e aguarde o novo build.
+COMO INSTALAR NO GITHUB
+-----------------------
+1. Abra o repositório:
+   compradormanv-glitch/aljust-loja
+
+2. Envie estes dois ficheiros para a RAIZ do repositório:
+   pesquisa-premium.css
+   pesquisa-premium.js
+
+3. Abra o ficheiro index.html e clique no lápis para editar.
+
+4. Dentro de <head>, imediatamente ANTES de </head>, cole:
+
+   <link rel="stylesheet" href="pesquisa-premium.css?v=1">
+
+5. No FINAL do index.html, imediatamente ANTES de </body>, cole:
+
+   <script src="pesquisa-premium.js?v=1"></script>
+
+6. Clique em "Commit changes".
+
+7. Espere aproximadamente 1 a 3 minutos pelo GitHub Pages atualizar.
+
+8. Abra:
+   https://compradormanv-glitch.github.io/aljust-loja/
+
+9. Faça atualização forçada:
+   Windows: Ctrl + F5
+
+RESULTADO
+---------
+Ao escrever por exemplo "cabo", a lista de pesquisa deve surgir centralizada,
+com até 6 produtos e o restante do site escurecido, igual ao modelo visual aprovado.
+
+SE A ALTERAÇÃO NÃO APARECER
+----------------------------
+Troque v=1 por v=2 nestas duas linhas do index.html:
+
+<link rel="stylesheet" href="pesquisa-premium.css?v=2">
+<script src="pesquisa-premium.js?v=2"></script>
+
+Isso força o navegador a carregar a versão nova em vez do cache antigo.

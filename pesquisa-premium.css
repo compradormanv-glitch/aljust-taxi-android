@@ -1,0 +1,324 @@
+/* AL.JUST — Pesquisa Premium
+   Coloque este ficheiro na raiz do repositório e carregue-o depois do CSS principal.
+*/
+
+:root{
+  --aljust-navy:#0a355d;
+  --aljust-red:#ff1f2d;
+  --aljust-green:#0cad57;
+  --aljust-border:#e5eaf0;
+  --aljust-muted:#61738a;
+}
+
+body.aljust-search-open{
+  overflow-x:hidden;
+}
+
+body.aljust-search-open::before{
+  content:"";
+  position:fixed;
+  inset:0;
+  background:rgba(17,39,61,.47);
+  backdrop-filter:blur(1.5px);
+  -webkit-backdrop-filter:blur(1.5px);
+  z-index:900;
+  pointer-events:none;
+}
+
+.topbar,
+.header,
+.mainnav{
+  position:relative;
+  z-index:1000;
+}
+
+.search-wrap{
+  position:relative !important;
+  z-index:1100 !important;
+}
+
+#searchSuggestions.aljust-premium-search{
+  position:absolute !important;
+  top:calc(100% + 12px) !important;
+  left:50% !important;
+  right:auto !important;
+  transform:translateX(-50%) !important;
+  width:min(760px, 86vw) !important;
+  max-height:none !important;
+  overflow:visible !important;
+  padding:0 !important;
+  margin:0 !important;
+  border:1px solid rgba(13,53,91,.13) !important;
+  border-radius:14px !important;
+  background:#fff !important;
+  box-shadow:0 24px 55px rgba(15,39,61,.24) !important;
+  z-index:1200 !important;
+}
+
+#searchSuggestions.aljust-premium-search[hidden]{
+  display:none !important;
+}
+
+.aljust-search-panel{
+  overflow:hidden;
+  border-radius:14px;
+  background:#fff;
+}
+
+.aljust-search-head{
+  min-height:54px;
+  display:flex;
+  align-items:center;
+  gap:12px;
+  padding:0 22px;
+  border-bottom:1px solid var(--aljust-border);
+  background:linear-gradient(#fff,#fbfcfe);
+}
+
+.aljust-search-head-icon{
+  width:28px;
+  height:28px;
+  display:grid;
+  place-items:center;
+  color:var(--aljust-navy);
+  font-size:22px;
+  flex:0 0 auto;
+}
+
+.aljust-search-head-title{
+  font-weight:800;
+  color:#0d3156;
+  font-size:17px;
+  white-space:nowrap;
+}
+
+.aljust-search-count{
+  margin-left:auto;
+  color:#7789a0;
+  font-size:13px;
+  white-space:nowrap;
+}
+
+.aljust-search-list{
+  padding:0 22px;
+}
+
+#searchSuggestions .aljust-search-row{
+  width:100% !important;
+  min-height:78px !important;
+  display:grid !important;
+  grid-template-columns:76px minmax(0,1fr) 150px !important;
+  align-items:center !important;
+  gap:16px !important;
+  padding:10px 0 !important;
+  margin:0 !important;
+  border:0 !important;
+  border-bottom:1px solid var(--aljust-border) !important;
+  border-radius:0 !important;
+  background:#fff !important;
+  text-align:left !important;
+  cursor:pointer !important;
+  font:inherit !important;
+}
+
+#searchSuggestions .aljust-search-row:hover{
+  background:#f8fbfe !important;
+}
+
+#searchSuggestions .aljust-search-row:last-child{
+  border-bottom:0 !important;
+}
+
+.aljust-result-img{
+  width:72px;
+  height:60px;
+  border-radius:10px;
+  background:#f1f4f7;
+  overflow:hidden;
+  display:grid;
+  place-items:center;
+}
+
+.aljust-result-img img{
+  width:100%;
+  height:100%;
+  object-fit:contain;
+  display:block;
+}
+
+.aljust-result-img span{
+  font-size:26px;
+}
+
+.aljust-result-main{
+  min-width:0;
+}
+
+.aljust-result-name{
+  display:block;
+  color:#0d3156;
+  font-size:15px;
+  line-height:1.25;
+  font-weight:800;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+
+.aljust-result-meta{
+  display:flex;
+  align-items:center;
+  flex-wrap:wrap;
+  gap:8px;
+  margin-top:6px;
+  color:#667b93;
+  font-size:13px;
+}
+
+.aljust-result-meta .dot{
+  color:#a8b3c0;
+}
+
+.aljust-result-right{
+  text-align:right;
+  align-self:center;
+}
+
+.aljust-result-price{
+  display:block;
+  color:var(--aljust-red);
+  font-size:18px;
+  line-height:1.15;
+  font-weight:900;
+  margin-bottom:6px;
+}
+
+.aljust-result-stock{
+  display:flex;
+  justify-content:flex-end;
+  align-items:center;
+  gap:7px;
+  color:var(--aljust-green);
+  font-size:13px;
+  font-weight:800;
+}
+
+.aljust-result-stock::before{
+  content:"";
+  width:9px;
+  height:9px;
+  border-radius:50%;
+  background:currentColor;
+  flex:0 0 auto;
+}
+
+.aljust-result-stock.out{
+  color:#b44444;
+}
+
+.aljust-search-footer{
+  height:56px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:12px;
+  border-top:1px solid var(--aljust-border);
+  background:#fbfcfe;
+  color:var(--aljust-red);
+  font-weight:900;
+  cursor:pointer;
+  user-select:none;
+}
+
+.aljust-search-footer:hover{
+  background:#f5f8fb;
+}
+
+.aljust-grid-icon{
+  display:grid;
+  grid-template-columns:repeat(2,8px);
+  grid-template-rows:repeat(2,8px);
+  gap:2px;
+}
+
+.aljust-grid-icon i{
+  width:8px;
+  height:8px;
+  border-radius:2px;
+  background:var(--aljust-red);
+  display:block;
+}
+
+.aljust-search-empty{
+  padding:28px 22px;
+  text-align:center;
+  color:#6d7f93;
+  font-size:14px;
+}
+
+@media (max-width:760px){
+  #searchSuggestions.aljust-premium-search{
+    position:fixed !important;
+    top:132px !important;
+    left:12px !important;
+    right:12px !important;
+    transform:none !important;
+    width:auto !important;
+    max-height:calc(100vh - 150px) !important;
+    overflow:auto !important;
+  }
+
+  .aljust-search-head{
+    padding:0 14px;
+  }
+
+  .aljust-search-list{
+    padding:0 14px;
+  }
+
+  #searchSuggestions .aljust-search-row{
+    grid-template-columns:60px minmax(0,1fr) 105px !important;
+    gap:10px !important;
+    min-height:72px !important;
+  }
+
+  .aljust-result-img{
+    width:58px;
+    height:52px;
+  }
+
+  .aljust-result-name{
+    font-size:14px;
+  }
+
+  .aljust-result-meta{
+    font-size:11px;
+    gap:5px;
+  }
+
+  .aljust-result-price{
+    font-size:15px;
+  }
+
+  .aljust-result-stock{
+    font-size:11px;
+  }
+
+  .aljust-search-count{
+    display:none;
+  }
+}
+
+@media (max-width:470px){
+  #searchSuggestions .aljust-search-row{
+    grid-template-columns:52px minmax(0,1fr) 88px !important;
+  }
+  .aljust-result-img{
+    width:50px;
+    height:46px;
+  }
+  .aljust-result-meta .subcat,
+  .aljust-result-meta .dot{
+    display:none;
+  }
+}

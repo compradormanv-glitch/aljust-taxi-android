@@ -1,0 +1,8 @@
+COLE NO <head> ANTES DE </head>:
+
+<link rel="stylesheet" href="pesquisa-premium.css?v=1">
+
+
+COLE NO FINAL DO index.html, ANTES DE </body>:
+
+<script src="pesquisa-premium.js?v=1"></script>
