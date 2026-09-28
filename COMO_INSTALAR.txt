@@ -1,0 +1,31 @@
+AL.JUST — ZIP SOMENTE PARA A ÁREA DE PESQUISA
+
+O objetivo deste patch é deixar a pesquisa visualmente organizada no formato da imagem de referência:
+- painel branco centralizado e com cantos arredondados;
+- título “Resultados da pesquisa” + quantidade de resultados;
+- até 6 produtos em linhas organizadas;
+- imagem, nome, categoria/subcategoria, preço em vermelho e disponibilidade;
+- rodapé “Ver todos os resultados →”;
+- fundo da página levemente escurecido enquanto o painel está aberto;
+- funcionamento do clique no produto mantido.
+
+IMPORTANTE
+O site atual do Al.just usa um index.html único e a pesquisa está dentro desse ficheiro.
+Para NÃO alterar outras partes do site, este ZIP contém apenas um patch JavaScript isolado.
+
+COMO INSTALAR
+1. Coloque o ficheiro `search-area-only.js` na raiz do repositório `aljust-loja`.
+2. No `index.html` atual, coloque esta única linha imediatamente antes de `</body>`:
+
+<script src="search-area-only.js"></script>
+
+3. Não substitua `admin.html`, `admin.js`, `produtos.js`, Supabase, imagens, checkout ou outras partes.
+4. Faça commit e publique.
+
+A pesquisa passa a usar os mesmos produtos já carregados pelo site e não cria uma base de dados nova.
+
+ARQUIVO ALTERADO
+- Apenas: search-area-only.js
+
+NOTA
+Este patch foi feito para a estrutura atual do repositório público do Al.just, que usa `#search`, `#searchSuggestions`, `products`, `money()`, `cachedImage()` e `openProductDetail()/chooseSearchProduct()`.
