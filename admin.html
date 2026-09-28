@@ -1,193 +1,123 @@
-<!DOCTYPE html>
-<html lang="pt-AO">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Painel administrativo da loja Al.just">
-  <title>Al.just — Admin</title>
-  <style>
-    :root{--navy:#12233f;--red:#d71920;--bg:#f4f6f9;--white:#fff;--text:#1f2937;--muted:#667085;--line:#e5e7eb;--green:#15803d}
-    *{box-sizing:border-box}body{margin:0;font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:var(--text)}
-    .topbar{height:68px;background:#fff;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 24px;position:sticky;top:0;z-index:20}
-    .logo{font-size:25px;font-weight:800}.logo .al{color:var(--red)}.logo .just{color:var(--navy)}
-    .admin-user{font-size:14px;color:var(--muted)}.layout{display:flex;min-height:calc(100vh - 68px)}
-    .sidebar{width:245px;background:var(--navy);padding:20px 14px;color:#fff}.nav-title{font-size:11px;letter-spacing:1px;text-transform:uppercase;color:#aebbd0;margin:8px 12px}
-    .nav button{width:100%;border:0;background:transparent;color:#e4ebf5;text-align:left;padding:12px 13px;border-radius:9px;margin:3px 0;cursor:pointer;font-size:14px}
-    .nav button:hover,.nav button.active{background:#243957;color:#fff}.nav button .ico{width:25px;display:inline-block}
-    main{flex:1;padding:28px;max-width:1550px;width:100%;margin:0 auto}.page{display:none}.page.active{display:block}
-    h1{font-size:29px;margin:0 0 5px}.subtitle{color:var(--muted);margin:0 0 22px}
-    .stats{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-bottom:22px}.stat{background:#fff;border:1px solid var(--line);border-radius:13px;padding:17px}.stat .label{font-size:12px;color:var(--muted)}.stat .num{font-size:24px;font-weight:800;margin-top:7px}
-    .panel{background:#fff;border:1px solid var(--line);border-radius:13px;padding:20px;overflow:auto}.panel h3{margin:0 0 15px}
-    .toolbar{display:flex;justify-content:space-between;gap:12px;align-items:center;margin-bottom:14px;flex-wrap:wrap}.search{min-width:260px;flex:1;max-width:450px}
-    input,select,textarea{width:100%;padding:11px 12px;border:1px solid #d3d9e3;border-radius:8px;background:#fff;font:inherit;color:var(--text)}textarea{min-height:90px;resize:vertical}
-    label{display:block;font-size:12px;font-weight:700;margin:11px 0 6px}.formgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px 16px}.full{grid-column:1/-1}
-    .btn{border:0;border-radius:8px;padding:10px 14px;font-weight:700;cursor:pointer}.primary{background:var(--navy);color:#fff}.red{background:var(--red);color:#fff}.light{background:#eef2f7;color:var(--text)}
-    .actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:15px}.small{padding:7px 9px;font-size:12px}
-    table{width:100%;border-collapse:collapse;min-width:860px}th,td{text-align:left;padding:12px 9px;border-bottom:1px solid #edf0f3;font-size:13px;vertical-align:top}th{font-size:12px;color:var(--muted);background:#fafbfc}
-    .badge{display:inline-block;border-radius:999px;padding:5px 8px;font-size:11px;font-weight:700}.paid{background:#dcfce7;color:#166534}.pending{background:#fef3c7;color:#92400e}
-    .empty{padding:25px;text-align:center;color:var(--muted)}.note{padding:11px 13px;background:#f8fafc;border:1px solid var(--line);border-radius:8px;color:#526071;font-size:13px;margin-bottom:15px}
-    .modal{display:none;position:fixed;inset:0;background:rgba(15,23,42,.52);z-index:50;align-items:center;justify-content:center;padding:20px}.modal.show{display:flex}
-    .modal-box{background:#fff;max-width:720px;width:100%;max-height:90vh;overflow:auto;border-radius:14px;padding:22px}.modal-head{display:flex;align-items:center;justify-content:space-between;gap:10px}.x{background:#eef2f7;border:0;border-radius:7px;padding:8px;cursor:pointer}
-    .toast{position:fixed;right:20px;bottom:20px;background:#111827;color:#fff;padding:12px 14px;border-radius:9px;display:none;z-index:80;font-size:13px}
-    @media(max-width:1100px){.stats{grid-template-columns:repeat(3,1fr)}}@media(max-width:800px){.sidebar{width:195px}.formgrid{grid-template-columns:1fr}.full{grid-column:auto}}@media(max-width:620px){.layout{display:block}.sidebar{width:100%;padding:10px}.nav{display:grid;grid-template-columns:repeat(2,1fr);gap:3px}.nav-title{display:none}main{padding:16px}.stats{grid-template-columns:1fr 1fr}.topbar{padding:0 14px}}
-  </style>
-  <script>
-    (function(){
-      if(sessionStorage.getItem("aljust_admin_authenticated")!=="1"){
-        window.location.replace("admin-login.html");
-      }
-    })();
-  </script>
-</head>
-<body>
-<header class="topbar"><div class="logo"><span class="al">AL</span><span class="just">.just</span></div><div class="admin-user">Painel Administrativo</div></header>
-<div class="layout">
-<aside class="sidebar"><div class="nav-title">Gestão</div><nav class="nav">
-<button class="active" data-page="dashboard"><span class="ico">📊</span>Visão geral</button>
-<button data-page="orders"><span class="ico">🛒</span>Pedidos</button>
-<button data-page="companies"><span class="ico">🏢</span>Empresas</button>
-<button data-page="products"><span class="ico">📦</span>Produtos</button>
-<button data-page="payments"><span class="ico">💳</span>Pagamentos</button>
-<button data-page="deliveries"><span class="ico">🚚</span>Entregas</button>
-<button data-page="stock"><span class="ico">📋</span>Stock</button>
-<button data-page="settings"><span class="ico">⚙️</span>Definições</button>
-</nav></aside>
+<!doctype html><html lang="pt-AO"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Al.just — Área do Proprietário</title><style>
+:root{--navy:#08233f;--red:#e21b23;--bg:#f4f6f9;--line:#e4e8ee;--muted:#667085;--white:#fff}*{box-sizing:border-box}body{margin:0;font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:#172436}.top{height:72px;background:#fff;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 24px;position:sticky;top:0;z-index:10}.logo img{width:150px;height:58px;object-fit:contain}.owner{font-weight:700;color:var(--navy)}.layout{display:flex;min-height:calc(100vh - 72px)}aside{width:240px;background:var(--navy);padding:18px 12px}aside h4{color:#aebbd0;font-size:11px;text-transform:uppercase;margin:5px 12px 10px}aside button{width:100%;text-align:left;border:0;background:transparent;color:#e8edf4;padding:13px 14px;border-radius:9px;margin:3px 0;cursor:pointer;font-size:14px}aside button:hover,aside button.active{background:#16395d}main{flex:1;padding:28px;max-width:1300px;margin:auto;width:100%}.page{display:none}.page.active{display:block}h1{margin:0 0 6px;font-size:30px}.sub{color:var(--muted);margin-bottom:20px}.panel{background:#fff;border:1px solid var(--line);border-radius:14px;padding:20px;overflow:auto}.toolbar{display:flex;gap:12px;justify-content:space-between;align-items:center;flex-wrap:wrap;margin-bottom:15px}.search{min-width:260px;max-width:500px;flex:1}input,select,textarea{width:100%;padding:11px 12px;border:1px solid #cfd7e2;border-radius:9px;font:inherit;background:#fff}textarea{min-height:90px;resize:vertical}.btn{border:0;border-radius:9px;padding:11px 15px;cursor:pointer;font-weight:700}.primary{background:var(--red);color:#fff}.dark{background:var(--navy);color:#fff}.light{background:#eef2f6;color:#172436}.danger{background:#fee2e2;color:#991b1b}.badge.danger{background:#fee2e2;color:#991b1b}.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}.full{grid-column:1/-1}.actions{display:flex;gap:8px;margin-top:18px;flex-wrap:wrap}.table{width:100%;border-collapse:collapse}.table th,.table td{text-align:left;padding:12px;border-bottom:1px solid #edf0f3;vertical-align:middle}.table th{font-size:13px;color:var(--muted)}.thumb{width:60px;height:60px;object-fit:contain;background:#f5f7fa;border-radius:8px}.badge{display:inline-block;padding:5px 9px;border-radius:999px;font-size:12px;font-weight:700}.ok{background:#dcfce7;color:#166534}.low{background:#fef3c7;color:#92400e}.empty{padding:30px;text-align:center;color:var(--muted)}.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:18px}.stat{background:#fff;border:1px solid var(--line);border-radius:14px;padding:17px}.stat small{color:var(--muted)}.stat b{display:block;font-size:26px;margin-top:7px}.preview{width:110px;height:110px;object-fit:contain;border:1px solid var(--line);border-radius:10px;background:#f7f8fa;margin-top:8px}@media(max-width:800px){.layout{display:block}aside{width:100%;display:grid;grid-template-columns:repeat(2,1fr);gap:4px}aside h4{display:none}main{padding:16px}.grid2{grid-template-columns:1fr}.full{grid-column:auto}.stats{grid-template-columns:1fr 1fr}}@media(max-width:520px){.stats{grid-template-columns:1fr}}
+
+.login-overlay{position:fixed;inset:0;background:#08233fee;display:flex;align-items:center;justify-content:center;z-index:100;padding:20px}.login-card{width:min(430px,96vw);background:#fff;border-radius:18px;padding:28px;box-shadow:0 20px 70px #0005}.login-card img{width:155px;height:62px;object-fit:contain;display:block;margin:0 auto 12px}.login-card h2{margin:0 0 6px;color:var(--navy)}.login-card p{color:var(--muted);font-size:13px}.login-card label{display:block;font-size:13px;font-weight:700;margin:14px 0 6px}.login-card input{width:100%;padding:12px;border:1px solid #cfd7e2;border-radius:9px}.login-error{display:none;background:#fee2e2;color:#991b1b;padding:10px;border-radius:9px;margin-top:12px;font-size:13px}.authbar{display:flex;align-items:center;gap:8px}.authbar button{border:0;border-radius:8px;padding:9px 12px;cursor:pointer}.hidden{display:none!important}
+</style><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script></head><body>
+<div id="loginOverlay" class="login-overlay">
+  <form class="login-card" id="loginForm">
+    <img src="logo.jpg" alt="Al.just"><h2>Área do Proprietário</h2>
+    <p>Entre com a conta do proprietário criada no Supabase para gerir os produtos da loja.</p>
+    <label>E-mail</label><input id="loginEmail" type="email" required placeholder="seu@email.com">
+    <label>Palavra-passe</label><input id="loginPassword" type="password" required placeholder="••••••••">
+    <button type="submit" class="btn primary" style="width:100%;margin-top:18px">Entrar</button>
+    <div id="loginError" class="login-error"></div>
+  </form>
+</div>
+
+<div id="reauthOverlay" class="login-overlay hidden">
+  <form class="login-card" id="reauthForm">
+    <img src="logo.jpg" alt="Al.just"><h2>Confirmar credenciais</h2>
+    <p>Por segurança, confirme o e-mail e a palavra-passe do administrador antes de continuar.</p>
+    <label>E-mail</label><input id="reauthEmail" type="email" required placeholder="seu@email.com">
+    <label>Palavra-passe</label><input id="reauthPassword" type="password" required placeholder="••••••••">
+    <div id="reauthError" class="login-error"></div>
+    <div class="actions"><button type="submit" class="btn primary">Confirmar</button><button type="button" class="btn light" onclick="cancelReauth()">Cancelar</button></div>
+  </form>
+</div>
+
+<header class="top"><a class="logo" href="index.html"><img src="logo.jpg" alt="Al.just"></a><div class="authbar"><div class="owner" id="ownerText">Área do Proprietário</div><button class="light" id="logoutBtn" class="hidden">Sair</button></div></header>
+<div class="layout"><aside><h4>Gestão</h4><button class="active" data-page="dashboard">📊 Visão geral</button><button data-page="products">📦 Produtos</button><button data-page="stock">📋 Stock</button></aside>
 <main>
-<section id="dashboard" class="page active"><h1>Visão geral</h1><p class="subtitle">Administração da loja Al.just — vendas exclusivamente para empresas.</p>
-<div class="stats"><div class="stat"><div class="label">Pedidos</div><div class="num" id="sOrders">0</div></div><div class="stat"><div class="label">Empresas</div><div class="num" id="sCompanies">0</div></div><div class="stat"><div class="label">Produtos</div><div class="num" id="sProducts">0</div></div><div class="stat"><div class="label">Pagos</div><div class="num" id="sPaid">0 Kz</div></div><div class="stat"><div class="label">Stock baixo</div><div class="num" id="sLow">0</div></div></div>
-<div class="panel"><h3>Últimos pedidos</h3><div id="recentOrders" class="empty">Ainda não existem pedidos.</div></div></section>
-
-<section id="orders" class="page"><h1>Pedidos</h1><p class="subtitle">Pedidos feitos por empresas.</p><div class="panel"><div class="toolbar"><input id="orderSearch" class="search" placeholder="Pesquisar por pedido, empresa ou NIF..." oninput="renderOrders()"><button class="btn red" onclick="openOrderModal()">+ Novo pedido</button></div><div id="ordersTable"></div></div></section>
-
-<section id="companies" class="page"><h1>Empresas</h1><p class="subtitle">Cadastro empresarial com nome, NIF e contactos.</p><div class="panel"><div class="toolbar"><input id="companySearch" class="search" placeholder="Pesquisar empresa ou NIF..." oninput="renderCompanies()"><button class="btn primary" onclick="openCompanyModal()">+ Adicionar empresa</button></div><div id="companiesTable"></div></div></section>
-
-<section id="products" class="page"><h1>Produtos</h1><p class="subtitle">Gerir catálogo, preços e disponibilidade.</p><div class="panel"><div class="toolbar"><input id="productSearch" class="search" placeholder="Pesquisar produto..." oninput="renderProducts()"><button class="btn primary" onclick="openProductModal()">+ Adicionar produto</button></div><div id="productsTable"></div></div></section>
-
-<section id="payments" class="page"><h1>Pagamentos</h1><p class="subtitle">Acompanhar estado dos pagamentos.</p><div class="panel"><div id="paymentsTable"></div></div></section>
-
-<section id="deliveries" class="page"><h1>Entregas</h1><p class="subtitle">Organizar moradas e estado da entrega.</p><div class="panel"><div id="deliveriesTable"></div></div></section>
-
-<section id="stock" class="page"><h1>Stock</h1><p class="subtitle">Controle de quantidade disponível.</p><div class="panel"><div id="stockTable"></div></div></section>
-
-<section id="settings" class="page"><h1>Definições</h1><p class="subtitle">Configurações gerais da loja.</p><div class="panel">
-<div class="note">Esta versão guarda os dados localmente no navegador. Para produção, o Admin deverá ser ligado ao banco de dados e ao sistema de autenticação do teu site.</div>
-<div class="formgrid"><div><label>Nome da loja</label><input id="storeName" value="Al.just"></div><div><label>Moeda</label><select id="currency"><option>Kz — Kwanza</option></select></div><div><label>E-mail administrativo</label><input id="adminEmail" type="email" placeholder="admin@aljust.com"></div><div><label>WhatsApp</label><input id="adminPhone" placeholder="+244 ..."></div></div>
-<div class="actions"><button class="btn primary" onclick="saveSettings()">Guardar definições</button><button class="btn light" onclick="exportData()">Exportar dados</button></div>
-</div></section>
+<section id="dashboard" class="page active"><h1>Visão geral</h1><p class="sub">Gestão dos produtos da Al.just.</p><div class="stats"><div class="stat"><small>Produtos publicados</small><b id="sProducts">0</b></div><div class="stat"><small>Stock total</small><b id="sStock">0</b></div><div class="stat"><small>Stock baixo (≤5)</small><b id="sLow">0</b></div><div class="stat"><small>Esgotados</small><b id="sOut">0</b></div></div><div class="panel"><h3>Ações rápidas</h3><p>Use o menu <b>Produtos</b> para cadastrar, publicar, editar ou eliminar produtos. Use <b>Stock</b> para alterar quantidades.</p></div></section>
+<section id="products" class="page"><h1>Produtos</h1><p class="sub">Cadastrar, publicar, editar e eliminar produtos.</p><div class="panel"><div class="toolbar"><input id="search" class="search" placeholder="Pesquisar produto..." oninput="renderProducts()"><div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn light" onclick="importLocalProducts()">⬆ Importar deste computador</button><button class="btn primary" onclick="openForm()">+ Cadastrar produto</button></div></div><div id="table"></div></div></section>
+<section id="stock" class="page"><h1>Stock</h1><p class="sub">Aumentar ou reduzir as unidades disponíveis. Os números de stock ficam visíveis apenas nesta área do proprietário.</p><div class="panel"><div id="stockTable"></div></div><div class="panel" style="margin-top:16px"><div class="toolbar"><div><h3 style="margin:0">Histórico de stock</h3><small style="color:#667085">Registo das entradas e saídas feitas neste painel.</small></div><button class="btn light" onclick="clearStockHistory()">Limpar histórico</button></div><div id="stockHistory"></div></div></section>
 </main></div>
-
-<div id="modal" class="modal"><div class="modal-box"><div class="modal-head"><h2 id="modalTitle" style="margin:0">Novo</h2><button class="x" onclick="closeModal()">✕</button></div><div id="modalBody"></div></div></div>
-<div id="toast" class="toast"></div>
-
 <script>
-const KEY='aljust_admin_v1';
-const EMPTY={companies:[],products:[],orders:[],settings:{}};
-let db=loadDB();
-
-function loadDB(){try{return JSON.parse(localStorage.getItem(KEY))||structuredClone(EMPTY)}catch(e){return structuredClone(EMPTY)}}
-function saveDB(){localStorage.setItem(KEY,JSON.stringify(db));updateAll()}
-function money(n){return (Number(n)||0).toLocaleString('pt-AO')+' Kz'}
-function esc(s){return String(s??'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]))}
-function uid(prefix){return prefix+'-'+Date.now().toString(36).toUpperCase()}
-function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.style.display='block';setTimeout(()=>t.style.display='none',2200)}
-function val(id){return document.getElementById(id).value}
-function nav(){document.querySelectorAll('.nav button').forEach(b=>b.onclick=()=>{document.querySelectorAll('.nav button').forEach(x=>x.classList.remove('active'));document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));b.classList.add('active');document.getElementById(b.dataset.page).classList.add('active');updateAll()})}
-nav();
-
-function openModal(title,html){document.getElementById('modalTitle').textContent=title;document.getElementById('modalBody').innerHTML=html;document.getElementById('modal').classList.add('show')}
-function closeModal(){document.getElementById('modal').classList.remove('show')}
-window.onclick=e=>{if(e.target.id==='modal')closeModal()}
-
-function openCompanyModal(){openModal('Adicionar empresa',`<div class="formgrid"><div><label>Nome da empresa *</label><input id="c_name"></div><div><label>NIF *</label><input id="c_nif"></div><div><label>Telefone/WhatsApp *</label><input id="c_phone"></div><div><label>E-mail</label><input id="c_email" type="email"></div><div class="full"><label>Morada *</label><input id="c_address"></div></div><div class="actions"><button class="btn primary" onclick="addCompany()">Guardar empresa</button><button class="btn light" onclick="closeModal()">Cancelar</button></div>`)}
-
-function addCompany(){
- const name=val('c_name').trim(),nif=val('c_nif').trim(),phone=val('c_phone').trim(),email=val('c_email').trim(),address=val('c_address').trim();
- if(!name||!nif||!phone||!address)return alert('Preencha nome, NIF, telefone e morada.');
- if(db.companies.some(c=>c.nif===nif))return alert('Este NIF já está cadastrado.');
- db.companies.push({id:uid('EMP'),name,nif,phone,email,address,created:new Date().toISOString()});saveDB();closeModal();toast('Empresa adicionada.')
+const SUPABASE_URL='https://myzlvhpvolpekesibvjz.supabase.co';
+const SUPABASE_KEY='sb_publishable_INVV9XjLZN9HAeReMGV-5g_OFjXoB0b';
+const sb=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+const CATEGORY_DATA={
+  'Informática':['Computadores e Portáteis','Impressoras','Monitores','Teclados e Mouses','Cabos e Adaptadores','Armazenamento','Redes e Conectividade','Componentes','Acessórios de Informática'],
+  'Escritório e Papelaria':['Mobiliário de Escritório','Máquinas de Escritório','Material de Escritório','Organização','Escrita','Livrarias','Material de Apresentação','Mochilas e Bolsas','Papel e Cadernos','POS e Cofres'],
+  'Material Escolar':['Cadernos','Mochilas','Lápis e Canetas','Material de Desenho','Material de Geometria','Pastas','Material de Pintura'],
+  'Electrodomésticos':['Pequenos Electrodomésticos','Cozinha','Limpeza','Ventilação','Outros'],
+  'Segurança Electrónica':['CCTV','Controle de Acesso','Sistemas de Alarme e Detecção','Gravadores','Acessórios de Segurança'],
+  'Smartphones e Tablets':['Smartphones','Tablets','Acessórios Mobile','Smartwatches','Carregadores','Cabos','Capas e Películas'],
+  'Energia':['Blocos de Tomadas','Energias Renováveis','Estabilizadores','Lâmpadas','Pilhas e Baterias','UPS'],
+  'Imagem e Som':['Acessórios de TV','Auscultadores','Colunas','Colunas Portáteis','Projectores','Telas de Projecção','TV Boxes','TV'],
+  'Jogos, Consolas e Desportos':['Acessórios','Carregadores','Consolas','Jogos','Secretárias Gamer','Cadeiras Gamer'],
+  'Beleza e Saúde':['Balanças','Cuidado Masculino','Cuidado Feminino','Higiene Oral','Saúde'],
+  'Impressão e Consumíveis':['Tinteiros','Toners','Papel de Impressão','Fitas','Consumíveis para Impressoras'],
+  'Redes e Telecomunicações':['Routers','Switches','Access Points','Cabos de Rede','Conectores RJ45','Adaptadores','Equipamentos de Rede']
+};
+const categoryOptions=(selected='')=>Object.keys(CATEGORY_DATA).map(c=>`<option value="${esc(c)}" ${c===selected?'selected':''}>${esc(c)}</option>`).join('');
+const subcategoryOptions=(cat,selected='')=>(CATEGORY_DATA[cat]||[]).map(c=>`<option value="${esc(c)}" ${c===selected?'selected':''}>${esc(c)}</option>`).join('');
+let products=[];let editing=null;let pendingAction=null;
+const $=id=>document.getElementById(id);
+const money=n=>new Intl.NumberFormat('pt-AO').format(Number(n||0))+' Kz';
+const esc=v=>String(v??'').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;').replaceAll("'",'&#039;');
+function parseImages(v){if(!v)return[];try{const a=JSON.parse(v);if(Array.isArray(a))return a.filter(Boolean)}catch(_){}return [v].filter(Boolean)}
+function firstImage(v){return parseImages(v)[0]||''}
+function decodeProductData(v){
+  if(v===null||v===undefined)return {text:'',ficha:{}};
+  if(typeof v==='object')return {text:typeof v.text==='string'?v.text:'',ficha:(v.ficha&&typeof v.ficha==='object')?v.ficha:{}};
+  const raw=String(v).trim();if(!raw)return {text:'',ficha:{}};
+  try{const o=JSON.parse(raw);if(o&&typeof o==='object')return {text:typeof o.text==='string'?o.text:'',ficha:(o.ficha&&typeof o.ficha==='object')?o.ficha:{}};}catch(_){}
+  return {text:raw,ficha:{}};
 }
-function renderCompanies(){
- const q=(document.getElementById('companySearch')?.value||'').toLowerCase();
- const rows=db.companies.filter(c=>`${c.name} ${c.nif}`.toLowerCase().includes(q));
- const box=document.getElementById('companiesTable');
- if(!rows.length){box.innerHTML='<div class="empty">Nenhuma empresa cadastrada.</div>';return}
- box.innerHTML=`<table><thead><tr><th>Empresa</th><th>NIF</th><th>Contacto</th><th>E-mail</th><th>Morada</th><th>Ações</th></tr></thead><tbody>${rows.map(c=>`<tr><td>${esc(c.name)}</td><td>${esc(c.nif)}</td><td>${esc(c.phone)}</td><td>${esc(c.email||'—')}</td><td>${esc(c.address)}</td><td><button class="btn small light" onclick="deleteCompany('${c.id}')">Apagar</button></td></tr>`).join('')}</tbody></table>`
+function parseFiles(files){return Promise.all(Array.from(files||[]).map(file=>new Promise((resolve,reject)=>{if(!file.type.startsWith('image/')){reject(new Error('Selecione apenas imagens.'));return}const r=new FileReader();r.onload=()=>{const src=r.result;const img=new Image();img.onload=()=>{const max=1400;let w=img.naturalWidth,h=img.naturalHeight;const scale=Math.min(1,max/Math.max(w,h));w=Math.max(1,Math.round(w*scale));h=Math.max(1,Math.round(h*scale));const canvas=document.createElement('canvas');canvas.width=w;canvas.height=h;const ctx=canvas.getContext('2d');ctx.drawImage(img,0,0,w,h);resolve(canvas.toDataURL('image/jpeg',0.78))};img.onerror=()=>resolve(src);img.src=src};r.onerror=reject;r.readAsDataURL(file)})))}
+function nav(){document.querySelectorAll('aside button').forEach(b=>b.onclick=()=>{document.querySelectorAll('aside button').forEach(x=>x.classList.remove('active'));document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));b.classList.add('active');$(b.dataset.page).classList.add('active');updateAll()})}nav();
+async function currentUser(){const {data}=await sb.auth.getUser();return data?.user||null}
+async function signIn(e){e.preventDefault();$('loginError').style.display='none';const email=$('loginEmail').value.trim(),password=$('loginPassword').value;const {error}=await sb.auth.signInWithPassword({email,password});if(error){$('loginError').textContent='E-mail ou palavra-passe inválidos.';$('loginError').style.display='block';return}showApp()}
+async function showApp(){const user=await currentUser();if(!user){$('loginOverlay').style.display='flex';$('logoutBtn').classList.add('hidden');return}$('loginOverlay').style.display='none';$('logoutBtn').classList.remove('hidden');$('ownerText').textContent='Proprietário: '+(user.email||'conta autorizada');await loadProducts()}
+async function forceLogin(){try{await sb.auth.signOut()}catch(_){}$('loginOverlay').style.display='flex';$('reauthOverlay').classList.add('hidden');$('logoutBtn').classList.add('hidden');$('ownerText').textContent='Área do Proprietário'}
+async function signOut(){await sb.auth.signOut();products=[];$('logoutBtn').classList.add('hidden');$('loginOverlay').style.display='flex'}
+$('loginForm').addEventListener('submit',signIn);$('logoutBtn').addEventListener('click',signOut);
+async function reauth(){const user=await currentUser();if(!user){$('loginOverlay').style.display='flex';return false}$('reauthEmail').value=user.email||'';$('reauthPassword').value='';$('reauthError').style.display='none';$('reauthOverlay').classList.remove('hidden');$('reauthPassword').focus();return new Promise(resolve=>pendingAction=resolve)}
+window.cancelReauth=function(){$('reauthOverlay').classList.add('hidden');if(pendingAction){const r=pendingAction;pendingAction=null;r(false)}};
+$('reauthForm').addEventListener('submit',async e=>{e.preventDefault();$('reauthError').style.display='none';const email=$('reauthEmail').value.trim(),password=$('reauthPassword').value;const {error}=await sb.auth.signInWithPassword({email,password});if(error){$('reauthError').textContent='Credenciais inválidas. Tente novamente.';$('reauthError').style.display='block';return}$('reauthOverlay').classList.add('hidden');if(pendingAction){const r=pendingAction;pendingAction=null;r(true)}});
+async function requireReauth(action){const ok=await reauth();if(ok)await action()}
+const HISTORY_KEY='aljust_stock_history_v1';
+function getStockHistory(){try{return JSON.parse(localStorage.getItem(HISTORY_KEY)||'[]')}catch(_){return []}}
+function saveStockHistory(list){localStorage.setItem(HISTORY_KEY,JSON.stringify(list.slice(0,100)))}
+function logStockChange(p,before,after,reason){const delta=Number(after)-Number(before);if(delta===0)return;const list=getStockHistory();list.unshift({at:new Date().toISOString(),name:p.name,before:Number(before),after:Number(after),delta,reason});saveStockHistory(list);renderStockHistory()}
+function renderStockHistory(){const host=$('stockHistory');if(!host)return;const list=getStockHistory();if(!list.length){host.innerHTML='<div class="empty">Ainda não existem movimentos de stock.</div>';return}host.innerHTML='<table class="table"><thead><tr><th>Data</th><th>Produto</th><th>Movimento</th><th>Antes</th><th>Depois</th><th>Motivo</th></tr></thead><tbody>'+list.slice(0,30).map(x=>{const dt=new Date(x.at);const movement=x.delta>0?`<span class="badge ok">+${x.delta}</span>`:`<span class="badge low">${x.delta}</span>`;return `<tr><td>${esc(dt.toLocaleString('pt-AO'))}</td><td><b>${esc(x.name)}</b></td><td>${movement} unidade(s)</td><td>${x.before}</td><td>${x.after}</td><td>${esc(x.reason)}</td></tr>`}).join('')+'</tbody></table>'}
+async function clearStockHistory(){requireReauth(async()=>{if(!confirm('Limpar todo o histórico de stock deste painel?'))return;localStorage.removeItem(HISTORY_KEY);renderStockHistory()})}
+async function loadProducts(){const {data,error}=await sb.from('produtos').select('id,created_at,name,category,price,stock,image_url,description').order('created_at',{ascending:false});if(error){console.error(error);alert('Não foi possível carregar os produtos. Verifique as políticas RLS da tabela produtos.');products=[]}else products=data||[];updateAll()}
+function openForm(id=null){requireReauth(()=>showForm(id))}
+function showForm(id=null){
+ const p=id?products.find(x=>String(x.id)===String(id)):{};editing=id;const pd=decodeProductData(p.description),f=pd.ficha||{},imgs=parseImages(p.image_url);
+ const html=`<div class="grid2">
+ <div><label>Nome do produto *</label><input id="pName" value="${esc(p.name||'')}"></div>
+ <div><label>Categoria</label><select id="pCat">${categoryOptions(p.category||'Informática')}</select></div>
+ <div><label>Marca</label><input id="pBrand" value="${esc(f.marca||'')}"></div>
+ <div><label>Modelo</label><input id="pModel" value="${esc(f.modelo||'')}"></div>
+ <div><label>Referência / SKU</label><input id="pRef" value="${esc(f.referencia||'')}"></div>
+ <div><label>Subcategoria</label><select id="pSubcat"><option value="">Selecione uma subcategoria</option>${subcategoryOptions(p.category||'Informática',f.subcategoria||'')}</select></div>
+ <div><label>Preço (Kz) *</label><input id="pPrice" type="number" min="0" value="${Number(p.price||0)}"></div>
+ <div><label>Stock *</label><input id="pStock" type="number" min="0" step="1" value="${Number(p.stock??0)}"></div>
+ <div><label>Cor</label><input id="pColor" value="${esc(f.cor||'')}"></div>
+ <div><label>Garantia</label><input id="pWarranty" value="${esc(f.garantia||'')}"></div>
+ <div><label>Dimensões</label><input id="pDimensions" value="${esc(f.dimensoes||'')}"></div>
+ <div><label>Peso</label><input id="pWeight" value="${esc(f.peso||'')}"></div>
+ <div><label>Material</label><input id="pMaterial" value="${esc(f.material||'')}"></div>
+ <div class="full"><label>Imagens do produto (pode selecionar várias)</label><input id="pImage" type="file" accept="image/jpeg,image/png,image/webp" multiple><div id="previewGrid" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px">${imgs.map((im,i)=>`<img class="preview" src="${esc(im)}" alt="Imagem ${i+1}">`).join('')}</div></div>
+ <div class="full"><label>Descrição</label><textarea id="pDesc" placeholder="Descrição completa do produto">${esc(pd.text||'')}</textarea></div>
+ <div class="full"><label>Especificações técnicas</label><textarea id="pSpecs" placeholder="Uma especificação por linha">${esc(f.especificacoes||'')}</textarea><small style="color:#667085">Estas informações aparecerão na ficha informativa quando o cliente clicar no produto.</small></div>
+ </div><div class="actions"><button class="btn dark" id="saveProductBtn">${id?'Guardar alterações':'Publicar produto'}</button><button class="btn light" onclick="closeForm()">Cancelar</button></div>`;
+ let w=document.createElement('div');w.id='modalWrap';w.style.cssText='position:fixed;inset:0;background:#0008;display:flex;align-items:center;justify-content:center;padding:20px;z-index:50';w.innerHTML=`<div class="panel" style="max-width:900px;width:100%;max-height:94vh;overflow:auto"><h2 style="margin-top:0">${id?'Editar produto':'Cadastrar produto'}</h2><p style="color:#667085">Ficha informativa: marca, modelo, referência, subcategoria, cor, garantia, dimensões, peso, material e especificações.</p>${html}</div>`;document.body.appendChild(w);
+ $('pCat').addEventListener('change',()=>{ $('pSubcat').innerHTML='<option value="">Selecione uma subcategoria</option>'+subcategoryOptions($('pCat').value,''); });
+ $('pImage').onchange=async()=>{const urls=await parseFiles($('pImage').files);$('previewGrid').innerHTML=urls.map((u,i)=>`<img class="preview" src="${esc(u)}" alt="Nova imagem ${i+1}">`).join('')};$('saveProductBtn').onclick=saveProduct;
 }
-function deleteCompany(id){if(confirm('Apagar esta empresa?')){db.companies=db.companies.filter(x=>x.id!==id);saveDB();toast('Empresa apagada.')}}
-
-function openProductModal(){
- openModal('Adicionar produto',`<div class="formgrid">
- <div><label>Nome do produto *</label><input id="p_name"></div>
- <div><label>Categoria</label><input id="p_cat"></div>
- <div><label>Preço (Kz) *</label><input id="p_price" type="number" min="0" step="0.01"></div>
- <div><label>Stock *</label><input id="p_stock" type="number" min="0" step="1"></div>
- <div class="full"><label>Imagem (URL)</label><input id="p_image" type="url" placeholder="https://..."></div>
- <div class="full"><label>Descrição</label><textarea id="p_desc"></textarea></div>
- </div>
- <div class="actions"><button type="button" class="btn primary" onclick="addProduct()">Guardar produto</button><button type="button" class="btn light" onclick="closeModal()">Cancelar</button></div>`)
-}
-
-function addProduct(){
- const name=document.getElementById('p_name').value.trim();
- const cat=document.getElementById('p_cat').value.trim();
- const price=Number(document.getElementById('p_price').value);
- const stock=Number(document.getElementById('p_stock').value);
- const image=document.getElementById('p_image').value.trim();
- const desc=document.getElementById('p_desc').value.trim();
-
- if(!name){alert('Digite o nome do produto.');document.getElementById('p_name').focus();return}
- if(!Number.isFinite(price)||price<0){alert('Digite um preço válido.');document.getElementById('p_price').focus();return}
- if(!Number.isInteger(stock)||stock<0){alert('Digite um stock válido.');document.getElementById('p_stock').focus();return}
-
- db.products.push({id:uid('PROD'),name,cat,price,stock,image,desc,created:new Date().toISOString()});
- try{saveDB();closeModal();toast('Produto adicionado com sucesso.')}catch(error){console.error(error);alert('Não foi possível guardar o produto neste navegador.')}
-}
-function renderProducts(){
- const q=(document.getElementById('productSearch')?.value||'').toLowerCase();
- const rows=db.products.filter(p=>`${p.name} ${p.cat}`.toLowerCase().includes(q));
- const box=document.getElementById('productsTable');
- if(!rows.length){box.innerHTML='<div class="empty">Nenhum produto cadastrado.</div>';return}
- box.innerHTML=`<table><thead><tr><th>Produto</th><th>Categoria</th><th>Preço</th><th>Stock</th><th>Estado</th><th>Ações</th></tr></thead><tbody>${rows.map(p=>`<tr><td>${esc(p.name)}</td><td>${esc(p.cat||'—')}</td><td>${money(p.price)}</td><td>${p.stock}</td><td>${p.stock<=3?'<span class="badge pending">Stock baixo</span>':'<span class="badge paid">Disponível</span>'}</td><td><button class="btn small light" onclick="deleteProduct('${p.id}')">Apagar</button></td></tr>`).join('')}</tbody></table>`
-}
-function deleteProduct(id){if(confirm('Apagar este produto?')){db.products=db.products.filter(x=>x.id!==id);saveDB();toast('Produto apagado.')}}
-
-function openOrderModal(){
- if(!db.companies.length||!db.products.length)return alert('Adicione pelo menos uma empresa e um produto antes de criar um pedido.');
- openModal('Novo pedido empresarial',`<div class="formgrid"><div><label>Empresa *</label><select id="o_company">${db.companies.map(c=>`<option value="${c.id}">${esc(c.name)} — NIF ${esc(c.nif)}</option>`).join('')}</select></div><div><label>Produto *</label><select id="o_product" onchange="calcOrder()">${db.products.map(p=>`<option value="${p.id}">${esc(p.name)} — ${money(p.price)}</option>`).join('')}</select></div><div><label>Quantidade *</label><input id="o_qty" type="number" min="1" value="1" oninput="calcOrder()"></div><div><label>Total</label><input id="o_total" readonly></div><div><label>Pagamento</label><select id="o_payment"><option>Multicaixa Express</option><option>Transferência bancária</option><option>Pagamento por referência</option></select></div><div><label>Estado do pagamento</label><select id="o_paystatus"><option>Pendente</option><option>Pago</option></select></div><div class="full"><label>Morada de entrega *</label><input id="o_address"></div><div class="full"><label>Observações</label><textarea id="o_notes"></textarea></div></div><div class="actions"><button class="btn primary" onclick="addOrder()">Criar pedido</button><button class="btn light" onclick="closeModal()">Cancelar</button></div>`);
- calcOrder()
-}
-function calcOrder(){const p=db.products.find(x=>x.id===val('o_product'));const q=Math.max(1,Number(val('o_qty'))||1);document.getElementById('o_total').value=p?money(p.price*q):money(0)}
-function addOrder(){
- const company=db.companies.find(c=>c.id===val('o_company')),p=db.products.find(x=>x.id===val('o_product')),qty=Math.max(1,Number(val('o_qty'))||1),address=val('o_address').trim();
- if(!company||!p||!address)return alert('Preencha empresa, produto, quantidade e morada.');
- if(p.stock<qty)return alert('Stock insuficiente.');
- db.orders.unshift({id:uid('ALJ'),date:new Date().toISOString(),companyId:company.id,company:company.name,nif:company.nif,productId:p.id,product:p.name,qty,unitPrice:p.price,total:p.price*qty,payment:val('o_payment'),payStatus:val('o_paystatus'),deliveryAddress:address,notes:val('o_notes').trim(),deliveryStatus:'Preparação'});
- p.stock-=qty;saveDB();closeModal();toast('Pedido criado.')
-}
-function renderOrders(){
- const q=(document.getElementById('orderSearch')?.value||'').toLowerCase(),rows=db.orders.filter(o=>`${o.id} ${o.company} ${o.nif}`.toLowerCase().includes(q)),box=document.getElementById('ordersTable');
- if(!rows.length){box.innerHTML='<div class="empty">Nenhum pedido encontrado.</div>';return}
- box.innerHTML=`<table><thead><tr><th>Pedido</th><th>Empresa / NIF</th><th>Produto</th><th>Total</th><th>Pagamento</th><th>Entrega</th><th>Ações</th></tr></thead><tbody>${rows.map(o=>`<tr><td><strong>${esc(o.id)}</strong><br><small>${new Date(o.date).toLocaleString('pt-AO')}</small></td><td>${esc(o.company)}<br><small>NIF: ${esc(o.nif)}</small></td><td>${esc(o.product)} x ${o.qty}</td><td>${money(o.total)}</td><td>${esc(o.payment)}<br>${o.payStatus==='Pago'?'<span class="badge paid">Pago</span>':'<span class="badge pending">Pendente</span>'}</td><td>${esc(o.deliveryStatus)}</td><td><button class="btn small light" onclick="advanceOrder('${o.id}')">Avançar</button> <button class="btn small" style="background:#fee2e2;color:#991b1b" onclick="deleteOrder('${o.id}')">Apagar</button></td></tr>`).join('')}</tbody></table>`
-}
-function advanceOrder(id){const o=db.orders.find(x=>x.id===id);if(!o)return;const states=['Preparação','Enviado','Entregue','Concluído'];let i=states.indexOf(o.deliveryStatus);o.deliveryStatus=states[Math.min(i+1,states.length-1)];saveDB();toast('Estado atualizado.')}
-function deleteOrder(id){if(confirm('Apagar este pedido?')){db.orders=db.orders.filter(x=>x.id!==id);saveDB();toast('Pedido apagado.')}}
-function renderPayments(){const box=document.getElementById('paymentsTable');if(!db.orders.length){box.innerHTML='<div class="empty">Nenhum pagamento registado.</div>';return}box.innerHTML=`<table><thead><tr><th>Pedido</th><th>Empresa</th><th>Método</th><th>Valor</th><th>Estado</th><th>Ação</th></tr></thead><tbody>${db.orders.map(o=>`<tr><td>${esc(o.id)}</td><td>${esc(o.company)}</td><td>${esc(o.payment)}</td><td>${money(o.total)}</td><td>${o.payStatus==='Pago'?'<span class="badge paid">Pago</span>':'<span class="badge pending">Pendente</span>'}</td><td>${o.payStatus==='Pago'?'—':`<button class="btn small primary" onclick="markPaid('${o.id}')">Marcar pago</button>`}</td></tr>`).join('')}</tbody></table>`}
-function markPaid(id){const o=db.orders.find(x=>x.id===id);if(o){o.payStatus='Pago';saveDB();toast('Pagamento marcado como pago.')}}
-function renderDeliveries(){const box=document.getElementById('deliveriesTable');if(!db.orders.length){box.innerHTML='<div class="empty">Nenhuma entrega registada.</div>';return}box.innerHTML=`<table><thead><tr><th>Pedido</th><th>Empresa</th><th>Morada</th><th>Estado</th><th>Ação</th></tr></thead><tbody>${db.orders.map(o=>`<tr><td>${esc(o.id)}</td><td>${esc(o.company)}</td><td>${esc(o.deliveryAddress)}</td><td>${esc(o.deliveryStatus)}</td><td><button class="btn small light" onclick="advanceOrder('${o.id}')">Atualizar</button></td></tr>`).join('')}</tbody></table>`}
-function renderStock(){const box=document.getElementById('stockTable');if(!db.products.length){box.innerHTML='<div class="empty">Nenhum produto cadastrado.</div>';return}box.innerHTML=`<table><thead><tr><th>Produto</th><th>Stock atual</th><th>Estado</th><th>Ação</th></tr></thead><tbody>${db.products.map(p=>`<tr><td>${esc(p.name)}</td><td>${p.stock}</td><td>${p.stock<=3?'<span class="badge pending">Stock baixo</span>':'<span class="badge paid">Normal</span>'}</td><td><button class="btn small light" onclick="changeStock('${p.id}')">Alterar</button></td></tr>`).join('')}</tbody></table>`}
-function changeStock(id){const p=db.products.find(x=>x.id===id);if(!p)return;const n=prompt('Novo stock para '+p.name,p.stock);if(n!==null&&Number.isInteger(Number(n))&&Number(n)>=0){p.stock=Number(n);saveDB();toast('Stock atualizado.')}}
-function saveSettings(){db.settings={storeName:document.getElementById('storeName').value.trim()||'Al.just',currency:document.getElementById('currency').value,adminEmail:document.getElementById('adminEmail').value.trim(),adminPhone:document.getElementById('adminPhone').value.trim()};saveDB();toast('Definições guardadas.')}
-function exportData(){const blob=new Blob([JSON.stringify(db,null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='aljust-admin-dados.json';a.click();URL.revokeObjectURL(url)}
-function updateDashboard(){
- document.getElementById('sOrders').textContent=db.orders.length;document.getElementById('sCompanies').textContent=db.companies.length;document.getElementById('sProducts').textContent=db.products.length;
- document.getElementById('sPaid').textContent=money(db.orders.filter(o=>o.payStatus==='Pago').reduce((a,o)=>a+o.total,0));document.getElementById('sLow').textContent=db.products.filter(p=>p.stock<=3).length;
- const box=document.getElementById('recentOrders');if(!db.orders.length){box.innerHTML='<div class="empty">Ainda não existem pedidos.</div>'}else{box.innerHTML='<table><thead><tr><th>Pedido</th><th>Empresa</th><th>Total</th><th>Estado</th></tr></thead><tbody>'+db.orders.slice(0,6).map(o=>`<tr><td>${esc(o.id)}</td><td>${esc(o.company)}</td><td>${money(o.total)}</td><td>${esc(o.deliveryStatus)}</td></tr>`).join('')+'</tbody></table>'}
-}
-function updateAll(){renderCompanies();renderProducts();renderOrders();renderPayments();renderDeliveries();renderStock();updateDashboard()}
-updateAll();
-if(db.settings.storeName)document.getElementById('storeName').value=db.settings.storeName;
-if(db.settings.adminEmail)document.getElementById('adminEmail').value=db.settings.adminEmail;
-if(db.settings.adminPhone)document.getElementById('adminPhone').value=db.settings.adminPhone;
-</script>
-</body>
-</html>
+function closeForm(){$('modalWrap')?.remove();editing=null}
+function readForm(){return{name:$('pName').value.trim(),category:$('pCat').value,price:Number($('pPrice').value),stock:Math.max(0,Number($('pStock').value)||0)}}
+async function saveProduct(){const btn=$('saveProductBtn');btn.disabled=true;const d=readForm();try{if(!d.name)throw new Error('Digite o nome do produto.');if(!Number.isFinite(d.price)||d.price<0)throw new Error('Digite um preço válido.');if(!Number.isInteger(d.stock))throw new Error('Digite um stock inteiro.');const ficha={marca:$('pBrand').value.trim(),modelo:$('pModel').value.trim(),referencia:$('pRef').value.trim(),subcategoria:$('pSubcat').value.trim(),cor:$('pColor').value.trim(),garantia:$('pWarranty').value.trim(),dimensoes:$('pDimensions').value.trim(),peso:$('pWeight').value.trim(),material:$('pMaterial').value.trim(),especificacoes:$('pSpecs').value.trim()};const description=JSON.stringify({text:$('pDesc').value.trim(),ficha});const files=Array.from($('pImage').files||[]);const newImgs=files.length?await parseFiles(files):[];const old=editing?products.find(x=>String(x.id)===String(editing)):null;const oldImgs=old?parseImages(old.image_url||''):[];const image_url=files.length?JSON.stringify(newImgs):(editing?JSON.stringify(oldImgs):'');const payload={...d,description,image_url};if(editing){const before=Number(old?.stock||0);const {error}=await sb.from('produtos').update(payload).eq('id',editing);if(error)throw error;if(before!==d.stock)logStockChange({...old,name:d.name},before,d.stock,'Alteração no cadastro');alert('Produto atualizado e publicado.')}else{const {data,error}=await sb.from('produtos').insert(payload).select('id,name,stock').single();if(error)throw error;if(d.stock>0)logStockChange({name:d.name},0,d.stock,'Stock inicial');alert('Produto publicado no site.')}closeForm();await loadProducts()}catch(err){console.error(err);alert('Não foi possível guardar o produto.\n\n'+(err?.message||err))}finally{btn.disabled=false}}
+async function importLocalProducts(){requireReauth(async()=>{const local=JSON.parse(localStorage.getItem('aljust_products_v2')||'[]');if(!local.length){alert('Não encontrei produtos guardados neste navegador.');return}if(!confirm(`Foram encontrados ${local.length} produto(s) neste computador. Importar para o Supabase?`))return;let ok=0,fail=0;for(const p of local){const legacyCat=String(p.category||'Informática');const normalizedCat=legacyCat==='Escritório'?'Escritório e Papelaria':legacyCat==='Escolar'?'Material Escolar':legacyCat;const row={name:p.name||'Produto',category:normalizedCat,price:Number(p.price||0),stock:Number(p.stock||0),description:typeof p.description==='string'?p.description:JSON.stringify(p.description||''),image_url:p.image||''};const {error}=await sb.from('produtos').insert(row);if(error){console.error(error);fail++}else ok++}alert(`Importação concluída. ${ok} produto(s) importado(s)${fail?` e ${fail} com erro.`:'.'}`);await loadProducts()})}
+async function deleteProduct(id){requireReauth(async()=>{if(!confirm('Eliminar este produto?'))return;const {error}=await sb.from('produtos').delete().eq('id',id);if(error){alert('Não foi possível eliminar. Verifique a política DELETE no Supabase.');console.error(error);return}await loadProducts()})}
+async function adjustStock(id,d,reason='Ajuste manual'){requireReauth(async()=>{const p=products.find(x=>String(x.id)===String(id));if(!p)return;const before=Number(p.stock||0);const next=Math.max(0,before+d);if(next===before)return;const {error}=await sb.from('produtos').update({stock:next}).eq('id',id);if(error){alert('Não foi possível alterar o stock.');console.error(error);return}logStockChange(p,before,next,reason);await loadProducts()})}
+async function setStock(id){requireReauth(async()=>{const p=products.find(x=>String(x.id)===String(id));if(!p)return;const n=prompt('Novo stock para '+p.name,p.stock);if(n===null||!/^[0-9]+$/.test(n))return;const before=Number(p.stock||0), after=Number(n);if(after===before)return;const {error}=await sb.from('produtos').update({stock:after}).eq('id',id);if(error){alert('Não foi possível definir o stock.');console.error(error);return}logStockChange(p,before,after,'Definição manual');await loadProducts()})}
+function renderProducts(){const q=$('search').value.toLowerCase();const rows=products.filter(p=>`${p.name} ${p.category}`.toLowerCase().includes(q));if(!rows.length){$('table').innerHTML='<div class="empty">Nenhum produto cadastrado.</div>';return}$('table').innerHTML=`<table class="table"><thead><tr><th>Imagem</th><th>Produto</th><th>Categoria</th><th>Preço</th><th>Stock</th><th>Ações</th></tr></thead><tbody>${rows.map(p=>{const d=decodeProductData(p.description),f=d.ficha||{};return`<tr><td>${firstImage(p.image_url)?`<img class="thumb" src="${esc(firstImage(p.image_url))}" onerror="this.style.display='none'">`:'📦'}</td><td><b>${esc(p.name)}</b><br><small>${esc(f.marca||'')}${f.referencia?` · Ref. ${esc(f.referencia)}`:''}</small></td><td>${esc(p.category)}</td><td>${money(p.price)}</td><td>${p.stock}</td><td><button class="btn light" onclick="openForm('${p.id}')">Editar</button> <button class="btn danger" onclick="deleteProduct('${p.id}')">Eliminar</button></td></tr>`}).join('')}</tbody></table>`}
+function renderStock(){if(!products.length){$('stockTable').innerHTML='<div class="empty">Nenhum produto cadastrado.</div>';renderStockHistory();return}$('stockTable').innerHTML=`<table class="table"><thead><tr><th>Produto</th><th>Stock atual</th><th>Estado</th><th>Ação</th></tr></thead><tbody>${products.map(p=>{const n=Number(p.stock||0);const badge=n===0?'<span class="badge danger">Esgotado</span>':n<=5?'<span class="badge low">Stock baixo</span>':'<span class="badge ok">Normal</span>';return `<tr><td>${esc(p.name)}</td><td><b>${n}</b> unidade(s)</td><td>${badge}</td><td><button class="btn light" onclick="adjustStock('${p.id}',-1,'Saída/Ajuste manual')">− 1</button> <button class="btn dark" onclick="adjustStock('${p.id}',1,'Entrada/Ajuste manual')">+ 1</button> <button class="btn light" onclick="adjustStock('${p.id}',5,'Entrada de mercadoria')">+ 5</button> <button class="btn light" onclick="setStock('${p.id}')">Definir</button></td></tr>`}).join('')}</tbody></table>`;renderStockHistory()}
+function updateAll(){$('sProducts').textContent=products.length;$('sStock').textContent=products.reduce((s,p)=>s+Number(p.stock||0),0);$('sLow').textContent=products.filter(p=>Number(p.stock)>0&&Number(p.stock)<=5).length;$('sOut').textContent=products.filter(p=>Number(p.stock)<=0).length;renderProducts();renderStock();renderStockHistory()}
+(async()=>{await forceLogin()})();
+</script></body></html>
